@@ -14,11 +14,11 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    Engine/formula.cpp \
-    Engine/tablecell.cpp
+    Engine/tablecell.cpp \
+    Engine/table.cpp
 
 HEADERS  += mainwindow.h \
-    Engine/formula.h \
-    Engine/tablecell.h
+    Engine/tablecell.h \
+    Engine/table.h
 
 FORMS    += mainwindow.ui
