@@ -13,8 +13,12 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    Engine/formula.cpp \
+    Engine/tablecell.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    Engine/formula.h \
+    Engine/tablecell.h
 
 FORMS    += mainwindow.ui
