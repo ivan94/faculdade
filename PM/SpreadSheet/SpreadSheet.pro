@@ -15,10 +15,12 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     Engine/tablecell.cpp \
-    Engine/table.cpp
+    Engine/table.cpp \
+    Persistence/filemanager.cpp
 
 HEADERS  += mainwindow.h \
     Engine/tablecell.h \
-    Engine/table.h
+    Engine/table.h \
+    Persistence/filemanager.h
 
 FORMS    += mainwindow.ui
