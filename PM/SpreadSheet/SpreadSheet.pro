@@ -16,11 +16,13 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     Engine/tablecell.cpp \
     Engine/table.cpp \
-    Persistence/filemanager.cpp
+    Persistence/filemanager.cpp \
+    Engine/formula.cpp
 
 HEADERS  += mainwindow.h \
     Engine/tablecell.h \
     Engine/table.h \
-    Persistence/filemanager.h
+    Persistence/filemanager.h \
+    Engine/formula.h
 
 FORMS    += mainwindow.ui

@@ -11,7 +11,7 @@ class Table
 
     string backFile;
 
-    static Table* instance = NULL;
+    static Table* instance;
 
     Table();
 

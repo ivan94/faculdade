@@ -4,33 +4,29 @@
 TableCell::TableCell()
 {
     this->value = "";
-    this->formula = NULL;
 }
 
-void TableCell::setValue(string str){
-    this->value = str;
+void TableCell::setValue(string& value){
+    this->value = value;
 
-    this->notifyDependences();
+    this->notifyDependeces();
 }
 
-void TableCell::setFormula(string formula){
-    this->formula = formula;
+void TableCell::setFormula(string& formula){
+    this->formula.setFormula(formula);
 }
 
-void TableCell::execFormula(){
-    //TODO: Implementar essa bagaça
-}
-
-string TableCell::getString(){
+string& TableCell::getString(){
     return this->value;
 }
 
 double TableCell::getDouble(){
     char* tailStr;
-    double v = strtod(this->value, &tailStr);
+    double v = strtod(this->value.c_str(), &tailStr);
 
+    //tailStr é o que sobra da string após a conversão. Se não sobrar uma string vazia o valor não é um numero
     if(*tailStr != '\0'){
-        exception e;
+        exception e; //TODO: create specific exception
         throw e;
     }
 
@@ -38,21 +34,21 @@ double TableCell::getDouble(){
 }
 
 string TableCell::getFormula(){
-    return this->formula;
+    return this->formula.getFormula();
 }
 
 void TableCell::notifyDependeces(){
-    for(list<TableCell*>::const_iterator iterator = this->dependences.begin(), end = this->dependences.end();
+    for(list<Formula*>::const_iterator iterator = this->dependences.begin(), end = this->dependences.end();
         iterator != end;
         ++iterator){
-        (*iterator)->execFormula();
+        (*iterator)->execute();
     }
 }
 
-void TableCell::registerDependence(TableCell *cell){
-    this->dependences.insert(cell);
+void TableCell::registerDependence(Formula *form){
+    this->dependences.push_front(form);
 }
 
-void TableCell::unregisterDependence(TableCell *cell){
-    this->dependences.remove(cell);
+void TableCell::unregisterDependence(Formula *form){
+    this->dependences.remove(form);
 }

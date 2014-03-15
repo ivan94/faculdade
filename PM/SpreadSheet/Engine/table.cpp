@@ -1,17 +1,18 @@
 #include "table.h"
 
+Table* Table::instance = NULL;
+
 Table::Table()
 {
     this->backFile = "";
 }
 
-static Table* Table::getInstance(){
+Table* Table::getInstance(){
     if(Table::instance == NULL)
         Table::instance = new Table();
     return Table::instance;
 }
-
-static void Table::killInstance(){
+void Table::killInstance(){
     delete Table::instance;
     Table::instance = NULL;
 }

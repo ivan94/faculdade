@@ -2,6 +2,7 @@
 #define TABLECELL_H
 #include <string>
 #include <list>
+#include "formula.h"
 
 using namespace std;
 
@@ -9,30 +10,28 @@ class TableCell
 {
     string value;
 
-    string formula;
+    Formula formula;
 
-    list<TableCell*> dependences;
+    list<Formula*> dependences;
 
     void notifyDependeces();
-
-    void registerDependence (TableCell* cell);
-
-    void unregisterDependence (TableCell* cell);
 
 public:
     TableCell();
 
-    void setValue(string* str);
+    void setValue(string& value);
 
-    void setFormula(string formula);
+    void setFormula(string& formula);
 
-    void execFormula();
-
-    string getString();
+    string& getString();
 
     double getDouble();
 
     string getFormula();
+
+    void registerDependence (Formula* form);
+
+    void unregisterDependence (Formula* form);
 
 };
 
