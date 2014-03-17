@@ -18,42 +18,50 @@ string Formula::getFormula(){
     return *(this->formula);
 }
 
+FormType Formula::processStringElement(string &e){
+
+    char* tail;
+
+    strtod(e.substr(1).c_str(), &tail);
+
+    if(e.substr(0, 2).compare("AVG") == 0){ //Função de média
+        return AVG;
+    }else if(e.substr(0, 2).compare("SUM") == 0){ //Função de SOMA
+        return SUM;
+    }else if(('A' <= e[0] <= 'Z') || *tail='\0'){
+        return CELL;
+    }else if(e.compare("+") == 0){
+        return PLUS;
+    }else if(e.compare("-") == 0){
+        return MINUS;
+    }else if(e.compare("*") == 0){
+        return MUL;
+    }else if(e.compare("/") == 0){
+        return DIV;
+    }else{
+        return NUM;
+    }
+}
+
+
+
 void Formula::execute(){
     //TODO: formula logic
-    stringstream strm(*(this->formula));
+    stringstream strm((*(this->formula)).substr(1));
 
-    string op1, op2;
+    string e;
 
-    double result, op;
+    bool first = true;
 
-    strm >> op1;
 
-    while(strm.eof()){
-        strm >> op2;
-        strm >> operation;
-
-        char* tail;
-        double n;
-        n = strtod(op2.c_str(), &tail);
-
-        //Testa o operador 2
-        if(*tailStr == '\0'){ //é um número
-            op = n;
-        }else if(op2.substr(0, 2).compare("AVG") == 0){ //Função de média
-            //fazer logica
-        }else if(op2.substr(0, 2).compare("SUM") == 0){ //Função de SOMA
-            //fazer logica
-        }else if(op2.compare("+") == 0){
-            result += op;
-        }else if(op2.compare("-") == 0){
-            result -= op;
-        }else if(op2.compare("*") == 0){
-            result *= op;
-        }else if(op2.compare("/") == 0){
-            result /= op;
+    while(!strm.eof()){
+        strm >> e;
+        switch(this->processStringElement(e)){
+            case AVG:
+                break;
+        case SUM:
         }
     }
-
 
 }
 
