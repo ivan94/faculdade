@@ -6,6 +6,8 @@
 
 using namespace std;
 
+class Formula;
+
 class TableCell
 {
     string value;

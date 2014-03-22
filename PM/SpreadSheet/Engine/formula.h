@@ -1,10 +1,12 @@
-#ifndef FORMULA_H
+    #ifndef FORMULA_H
 #define FORMULA_H
 #include <string>
 
 using namespace std;
 
 enum FormType {AVG, SUM, CELL, NUM, PLUS, MINUS, DIV, MUL};
+
+class TableCell;
 
 class Formula
 {

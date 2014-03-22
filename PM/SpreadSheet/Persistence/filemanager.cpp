@@ -20,7 +20,7 @@ FileContent FileManager::openFile(string filename){
     file >> colSize;
 
     FileContent content;
-    content.matrix = new int[rowSize*colSize];
+    content.matrix = new string[rowSize*colSize];
     content.rowSize = rowSize;
     content.colSize = colSize;
 
@@ -39,6 +39,7 @@ FileContent FileManager::openFile(string filename){
 }
 
 void FileManager::saveFile(FileContent content){
+    //Garante que o arquivo exista para salva-lo
     ifstream test(this->fileName);
     if(test.fail()){
         throw new exception;
@@ -46,6 +47,9 @@ void FileManager::saveFile(FileContent content){
     test.close();
 
     ofstream file(this->fileName);
+
+    file << content.rowSize << endl;
+    file << content.colSize << endl;
 
     for(int i = 0; i < content.rowSize; i++){
         if(i > 0 ) file << endl;
@@ -58,8 +62,11 @@ void FileManager::saveFile(FileContent content){
 }
 
 void FileManager::saveFileAs(string fileName, FileContent content){
+    //Muda o arquivo que esta sendo trabalhado
+
     this->fileName = fileName;
 
+    //Cria o arquivo no sistema
     ofstream creator(fileName);
     creator.close();
 
