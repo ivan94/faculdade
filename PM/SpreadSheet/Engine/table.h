@@ -2,7 +2,6 @@
 #define TABLE_H
 #include "tablecell.h"
 #include "../Persistence/filemanager.h"
-
 /*
  * Classe principal da lógica da planillha
  * Abstração da tabela em sí
@@ -10,8 +9,8 @@
 class Table
 {
     //Tamanhos da planilha
-    static const int COLUMNSIZE = 20;
-    static const int ROWSIZE = 20;
+    static const int COLUMNSIZE = 1000;
+    static const int ROWSIZE = 1000;
 
     TableCell cells[COLUMNSIZE][ROWSIZE];
 

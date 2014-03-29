@@ -6,31 +6,19 @@ TableCell::TableCell()
     this->value = "";
 }
 
-void TableCell::setValue(string& value){
-    this->value = value;
-
-    this->notifyDependeces();
+void TableCell::setFormula(string formula){
+    if(this->getString()!=formula){
+        this->formula.setFormula(formula);
+        this->notifyDependeces();
+    }
 }
 
-void TableCell::setFormula(string& formula){
-    this->formula.setFormula(formula);
-}
-
-string& TableCell::getString(){
-    return this->value;
+string TableCell::getString(){
+    return this->formula.getValor();
 }
 
 double TableCell::getDouble(){
-    char* tailStr;
-    double v = strtod(this->value.c_str(), &tailStr);
-
-    //tailStr é o que sobra da string após a conversão. Se não sobrar uma string vazia o valor não é um numero
-    if(*tailStr != '\0'){
-        exception e; //TODO: create specific exception
-        throw e;
-    }
-
-    return v;
+    return this->formula.getResult();
 }
 
 string TableCell::getFormula(){
@@ -52,3 +40,4 @@ void TableCell::registerDependence(Formula *form){
 void TableCell::unregisterDependence(Formula *form){
     this->dependences.remove(form);
 }
+

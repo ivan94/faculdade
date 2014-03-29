@@ -8,7 +8,7 @@ FileManager::FileManager()
 
 FileContent FileManager::openFile(string filename){
     ifstream file;
-    file.open(filename);
+    file.open(filename.c_str());
 
     if(file.fail()){
         throw new exception;
@@ -40,13 +40,13 @@ FileContent FileManager::openFile(string filename){
 
 void FileManager::saveFile(FileContent content){
     //Garante que o arquivo exista para salva-lo
-    ifstream test(this->fileName);
+    ifstream test(this->fileName.c_str());
     if(test.fail()){
         throw new exception;
     }
     test.close();
 
-    ofstream file(this->fileName);
+    ofstream file(this->fileName.c_str());
 
     file << content.rowSize << endl;
     file << content.colSize << endl;
@@ -67,7 +67,7 @@ void FileManager::saveFileAs(string fileName, FileContent content){
     this->fileName = fileName;
 
     //Cria o arquivo no sistema
-    ofstream creator(fileName);
+    ofstream creator(fileName.c_str());
     creator.close();
 
     this->saveFile(content);

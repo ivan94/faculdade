@@ -21,11 +21,9 @@ class TableCell
 public:
     TableCell();
 
-    void setValue(string& value);
+    void setFormula(string formula);
 
-    void setFormula(string& formula);
-
-    string& getString();
+    string getString();
 
     double getDouble();
 

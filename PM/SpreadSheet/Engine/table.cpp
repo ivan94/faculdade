@@ -17,7 +17,7 @@ void Table::killInstance(){
 }
 
 TableCell* Table::getCell(int x, int y){
-    if(x < 0 || x >= ROWSIZE || y < 0 || y > COLUMNSIZE)
+    if(x < 0 || x >= ROWSIZE || y < 0 || y >= COLUMNSIZE)
         throw new exception;
 
     return &(this->cells[x][y]);
@@ -48,11 +48,11 @@ void Table::loadTableFromFile(string fileLocation){
         for(int j = 0; j<cont.colSize && j<COLUMNSIZE; j++){
             //Verifica se o valor é uma formula, caracterizada por iniciar com o caractere '='
             if(cont.matrix[i*COLUMNSIZE + j][0] == '='){
-                this->cells[i][j].setValue("");
+                //this->cells[i][j].setValue("");
                 this->cells[i][j].setFormula(cont.matrix[i*COLUMNSIZE + j]);
             }else{
-                this->cells[i][j].setValue(cont.matrix[i*COLUMNSIZE + j]);
-                this->cells[i][j].setFormula("");
+                //this->cells[i][j].setValue(cont.matrix[i*COLUMNSIZE + j]);
+                this->cells[i][j].setFormula(cont.matrix[i*COLUMNSIZE + j]);
             }
         }
     }

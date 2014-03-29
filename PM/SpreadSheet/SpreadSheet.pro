@@ -13,16 +13,17 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
     Engine/tablecell.cpp \
     Engine/table.cpp \
     Persistence/filemanager.cpp \
-    Engine/formula.cpp
+    Engine/formula.cpp \
+    spreadsheet.cpp
 
-HEADERS  += mainwindow.h \
+HEADERS  += \
     Engine/tablecell.h \
     Engine/table.h \
     Persistence/filemanager.h \
-    Engine/formula.h
+    Engine/formula.h \
+    spreadsheet.h
 
 FORMS    += mainwindow.ui
