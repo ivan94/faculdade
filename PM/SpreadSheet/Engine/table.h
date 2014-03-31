@@ -2,15 +2,22 @@
 #define TABLE_H
 #include "tablecell.h"
 #include "../Persistence/filemanager.h"
+
+class CellOutOfRangeException : exception{};
+
 /*
  * Classe principal da lógica da planillha
  * Abstração da tabela em sí
  */
 class Table
 {
+public:
+
     //Tamanhos da planilha
     static const int COLUMNSIZE = 1000;
     static const int ROWSIZE = 1000;
+
+private:
 
     TableCell cells[COLUMNSIZE][ROWSIZE];
 
@@ -28,6 +35,7 @@ class Table
     FileContent tableToFileContent();
 
 public:
+
     //Metodos para se obter e remover a instancia da classe
     static Table* getInstance();
     static void killInstance();

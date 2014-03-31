@@ -17,11 +17,17 @@
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="QTextEdit" name="textEdit">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
       <property name="maximumSize">
        <size>
         <width>16777215</width>
         <height>30</height>
        </size>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -85,15 +91,14 @@
     <addaction name="actionSave"/>
     <addaction name="actionSaveAs"/>
    </widget>
-   <widget class="QMenu" name="menuTabela">
+   <widget class="QMenu" name="menuAbout">
     <property name="title">
-     <string>Edit</string>
+     <string>About</string>
     </property>
-    <addaction name="actionInsert_Row"/>
-    <addaction name="actionInsert_Column"/>
+    <addaction name="actionSpreadSheet"/>
    </widget>
    <addaction name="menuArquivo"/>
-   <addaction name="menuTabela"/>
+   <addaction name="menuAbout"/>
   </widget>
   <action name="actionNew">
    <property name="text">
@@ -119,22 +124,17 @@
     <string>Ctrl+S</string>
    </property>
   </action>
-  <action name="actionInsert_Row">
-   <property name="text">
-    <string>Insert Row</string>
-   </property>
-  </action>
-  <action name="actionInsert_Column">
-   <property name="text">
-    <string>Insert Column</string>
-   </property>
-  </action>
   <action name="actionSaveAs">
    <property name="text">
     <string>SaveAs</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+A</string>
+   </property>
+  </action>
+  <action name="actionSpreadSheet">
+   <property name="text">
+    <string>SpreadSheet</string>
    </property>
   </action>
  </widget>

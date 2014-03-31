@@ -5,8 +5,9 @@
 #include <cstdlib>
 #include <cmath>
 
-Formula::Formula()
+Formula::Formula(TableCell* cell)
 {
+    this->boundCell = cell;
     this->formula = NULL;
     this->bufferStack = new stack<string>;
     this->dependencies = new list<TableCell*>;
@@ -22,26 +23,23 @@ string Formula::getFormula(){
     return *(this->formula);
 }
 
-string Formula::getValor(){
-    return this->valor;
-}
-double Formula::getResult(){
-    return this->result;
+TableCell* Formula::getBoundCell(){
+    return this->boundCell;
 }
 
 void Formula::setFormula(string &formula){
     this->unpopulateBuffer();
     if(this->formula != NULL) delete this->formula;
     this->formula = new string(formula);
+    if((*this->formula)[0] != '=') return;
     this->populateBuffer();
-
     this->execute();
 
 }
 
-enum ParseState{INIT, CELL, NUM, FUNC, OP};
-
-ParseState processElementType(string s, char* buf, char* bufFuncArg){
+//Processa o elemento, definindo o que ele é e strings auxiliares processadas
+//bufFuncArg é o argumento da função caso o s passado seja a função
+ParseState Formula::processElementType(string s, char* buf, char* bufFuncArg){
     //contador do argumento de função
     int bfaCount = 0;
 
@@ -62,19 +60,19 @@ ParseState processElementType(string s, char* buf, char* bufFuncArg){
             if(i == 3 && state==CELL){
                 state = FUNC;
             }else{
-                throw new exception;
+                throw FormulaParseException();
             }
         }else if(c==')'){
             //')' só é suportado se o termo for uma função e for o último elemento do termo
             if(state == FUNC && i==(s.length()-1)){
                 break;
             }else{
-                throw new exception;
+               throw FormulaParseException();
             }
         }else if(c == ':'){
             //':' especifica uma range de celulas, que só é suportado em funções
             if(state != FUNC){
-                throw new exception;
+                throw FormulaParseException();
             }else{
                 bufFuncArg[bfaCount] = c;
                 bfaCount++;
@@ -87,7 +85,7 @@ ParseState processElementType(string s, char* buf, char* bufFuncArg){
                 state = CELL;
             //Não é suportado letras depois de números.
             }else if(state == NUM){
-                throw new exception;
+                throw FormulaParseException();
             //Se é uma função passa a ler no
             }else if(state == FUNC){
                 bufFuncArg[bfaCount] = c;
@@ -105,7 +103,7 @@ ParseState processElementType(string s, char* buf, char* bufFuncArg){
             }
             //'.' só é suportado em números
             if(state != NUM && c == '.'){
-                throw new exception;
+                throw FormulaParseException();
             }
             buf[i] = c;
         }
@@ -114,10 +112,12 @@ ParseState processElementType(string s, char* buf, char* bufFuncArg){
     return state;
 }
 
+
+/*Converte a célula no formato de usuário (Ex: A3) para a posição da célula na matriz de string*/
 void convertCell(string cell,int *row,int *col){
     int exp=*col=*row=0;
 
-    for(int i=cell.size();i>=0;--i){
+    for(int i=cell.size()-1;i>=0;--i){
         if(cell[i]>='0' && cell[i]<='9'){
             *col += (cell[i]-'0')*pow(10,cell.size()-i-1);
         }else{
@@ -126,13 +126,18 @@ void convertCell(string cell,int *row,int *col){
             *row += (cell[i]-'A'+1)*pow(26,exp-i);
         }
     }
+    *row-=1;
+    *col-=1;
+
+
 }
 
+/*Converte o range em formato do usuário(Ex A1:B2) para a posição das duas células presentes na range*/
 void convertRange(string range, int* r1, int* c1, int* r2, int* c2){
     int row_1,col_1,row_2,col_2;
 
     int sepPos = range.find(':'); //posição do separador ':'
-    string cell_1 = range.substr(0, sepPos - 1);
+    string cell_1 = range.substr(0, sepPos);
     string cell_2 = range.substr(sepPos + 1);
 
     convertCell(cell_1,&row_1,&col_1);
@@ -145,6 +150,8 @@ void convertRange(string range, int* r1, int* c1, int* r2, int* c2){
     *c2 = max(col_1, col_2);
 }
 
+
+/*Adiciona as dependencias*/
 void Formula::addDependence(string s){
     char buf[s.length()];
     char bufAux[s.length()];
@@ -155,14 +162,14 @@ void Formula::addDependence(string s){
 
     ParseState state = processElementType(s, buf, bufAux);
     switch(state){
-        case CELL:
+        case CELL: //Adiciona a dependencia na célula
             convertCell(s, &r, &c);
             tc = Table::getInstance()->getCell(r,c);
             tc->registerDependence(this);
             this->dependencies->push_front(tc);
             break;
-        case FUNC:
-            convertRange(s, &r1, &c1, &r2, &c2);
+        case FUNC://Percorre a range e adiciona a dependencia em cada uma das células
+            convertRange(string(bufAux), &r1, &c1, &r2, &c2);
             for(r=r1; r<=r2; r++){
                 for(c=c1; c<=c2; c++){
                     tc = Table::getInstance()->getCell(r,c);
@@ -176,6 +183,8 @@ void Formula::addDependence(string s){
     }
 }
 
+
+/*Remove todas as dependencias*/
 void Formula::removeDependencies(){
     while(!this->dependencies->empty()){
         TableCell* tc = this->dependencies->front();
@@ -208,6 +217,8 @@ void Formula::populateBuffer(){
     }
 }
 
+//Função auxiliar da função SUM da formula.
+//Recebe o range de células e retorna a soma delas
 double sum(string range){
     int sum=0.0;
     int row_1,col_1,row_2,col_2;
@@ -222,8 +233,10 @@ double sum(string range){
     return sum;
 }
 
+//Função auxiliar da função AVG da formula.
+//Recebe o range de células e retorna a média delas
 double avg(string range){
-    int sum=0.0;
+    double sum=0.0;
     int row_1,col_1,row_2,col_2;
 
     convertRange(range, &row_1, &col_1, &row_2, &col_2);
@@ -238,6 +251,7 @@ double avg(string range){
     return sum/d;
 }
 
+//Faz parse de elemento por elemento na formula, retornando sempre o número associado ou o operador
 string Formula::parse(string s){
     //Buffer do termo lido e do argumento de função
     char buf[s.length()];
@@ -248,12 +262,11 @@ string Formula::parse(string s){
     string r;
     stringstream rs;
 
-
-    if(state == CELL){
+    if(state == CELL){ //Adiquire o valor na célula e o retorna
         int r, c;
         convertCell(s, &r, &c);
         rs << (Table::getInstance()->getCell(r,c)->getDouble());
-    }else if(state == FUNC){
+    }else if(state == FUNC){//Executa a função correspondente e retorna o valor calculado
         buf[3] = '\0';
         string s = "SUM";
         string a = "AVG";
@@ -262,18 +275,20 @@ string Formula::parse(string s){
         }else if(a == buf){
             rs << (avg(string(bufFuncArg)));
         }else{
-            throw new exception;
+            throw FormulaParseException();
         }
     }else{
         return s;
     }
-    rs >> r;
+    rs >> r; //Retorna sempre o valor como string
     return r;
 }
 
 void Formula::execute(){
     stack<string> execStack;
     stack<string> bsCopy(*(this->bufferStack)); //cópia do bufferStack que pode ser modificada
+    //Desempilha da pilha de buffer e empilha na pilha de execução, já feito parse
+    //A pilha de execução contem apenas letras e números
     while(!bsCopy.empty()){
         execStack.push(this->parse(bsCopy.top()));
         bsCopy.pop();
@@ -285,8 +300,11 @@ void Formula::execute(){
 
     op1=execStack.top();
     execStack.pop();
+    char *saved_locale;
+    saved_locale = setlocale(LC_NUMERIC, "C"); //Marretada para o strtod funcionar como deveria
     result=strtod(op1.c_str(), &tailStr);
-
+    //Loop de execução da formula
+    //O processo se resume em: desempilha o elemento, se for um operando armazena, se for um operador realiza a operação
     while(!execStack.empty()){
         if(execStack.top() == "+"){
             result+=strtod(op2.c_str(), &tailStr);
@@ -306,11 +324,11 @@ void Formula::execute(){
         }
         execStack.pop();
     }
-    this->result=result;
-
+    setlocale(LC_NUMERIC, saved_locale);
     stringstream aux;
     aux<<result;
     string valor;
     aux>>valor;
-    this->valor= valor;
+    //seta o resultado final na célula
+    this->boundCell->setValue(valor);
 }

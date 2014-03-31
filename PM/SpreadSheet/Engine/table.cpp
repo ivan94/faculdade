@@ -4,6 +4,11 @@ Table* Table::instance = NULL;
 
 Table::Table()
 {
+    for(int i = 0; i<ROWSIZE; i++){
+        for(int j=0; j<COLUMNSIZE; j++){
+            this->cells[i][j].setCellId(i,j);
+        }
+    }
 }
 
 Table* Table::getInstance(){
@@ -17,9 +22,9 @@ void Table::killInstance(){
 }
 
 TableCell* Table::getCell(int x, int y){
-    if(x < 0 || x >= ROWSIZE || y < 0 || y >= COLUMNSIZE)
-        throw new exception;
-
+    if(x < 0 || x >= ROWSIZE || y < 0 || y >= COLUMNSIZE){
+        throw CellOutOfRangeException();
+    }
     return &(this->cells[x][y]);
 }
 
@@ -37,6 +42,9 @@ FileContent Table::tableToFileContent(){
         }
     }
 
+    content.rowSize = ROWSIZE;
+    content.colSize = COLUMNSIZE;
+
     return content;
 }
 
@@ -48,11 +56,9 @@ void Table::loadTableFromFile(string fileLocation){
         for(int j = 0; j<cont.colSize && j<COLUMNSIZE; j++){
             //Verifica se o valor é uma formula, caracterizada por iniciar com o caractere '='
             if(cont.matrix[i*COLUMNSIZE + j][0] == '='){
-                //this->cells[i][j].setValue("");
                 this->cells[i][j].setFormula(cont.matrix[i*COLUMNSIZE + j]);
             }else{
-                //this->cells[i][j].setValue(cont.matrix[i*COLUMNSIZE + j]);
-                this->cells[i][j].setFormula(cont.matrix[i*COLUMNSIZE + j]);
+                this->cells[i][j].setValue(cont.matrix[i*COLUMNSIZE + j]);
             }
         }
     }

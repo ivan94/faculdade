@@ -1,24 +1,50 @@
 #include "tablecell.h"
 #include <cstdlib>
 
-TableCell::TableCell()
+TableCell::TableCell() : formula(this)
 {
     this->value = "";
 }
 
-void TableCell::setFormula(string formula){
-    if(this->getString()!=formula){
-        this->formula.setFormula(formula);
-        this->notifyDependeces();
-    }
+void TableCell::setCellId(int r, int c){
+    this->rId = r;
+    this->cId = c;
+}
+
+int TableCell::getCellRId(){
+    return this->rId;
+}
+
+int TableCell::getCellCId(){
+    return this->cId;
+}
+
+list<Formula*>  TableCell::setValue(string v){
+    this->value = v;
+    this->notifyDependeces();
+    return this->dependences;
+}
+
+list<Formula*>  TableCell::setFormula(string formula){
+    this->formula.setFormula(formula);
+    return this->dependences;
 }
 
 string TableCell::getString(){
-    return this->formula.getValor();
+    return this->value;
 }
 
 double TableCell::getDouble(){
-    return this->formula.getResult();
+    char *saved_locale;
+    saved_locale = setlocale(LC_NUMERIC, "C");
+    char* tail;
+    double v = strtod(this->value.c_str(),&tail);
+    if(*tail!='\0'){
+        setlocale(LC_NUMERIC, saved_locale);
+        throw NotANumberCellException();
+    }
+    setlocale(LC_NUMERIC, saved_locale);
+    return v;
 }
 
 string TableCell::getFormula(){

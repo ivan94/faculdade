@@ -8,6 +8,9 @@ using namespace std;
 
 class Formula;
 
+class NotANumberCellException : exception{
+};
+
 class TableCell
 {
     string value;
@@ -18,10 +21,21 @@ class TableCell
 
     void notifyDependeces();
 
+    int rId, cId;
+
 public:
+
+    void setCellId(int r, int c);
+
+    int getCellRId();
+
+    int getCellCId();
+
     TableCell();
 
-    void setFormula(string formula);
+    list<Formula*> setValue(string v);
+
+    list<Formula*>  setFormula(string formula);
 
     string getString();
 

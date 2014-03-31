@@ -4,6 +4,8 @@
 
 using namespace std;
 
+class FileNotExistsException : exception{};
+
 /*Estrutura intermediaria entre lógica e persistencia
   A tabela da planillha é conhecida da persistencia apenas como uma matriz de string,
   sendo essa string o valor da celula ou sua formula (celulas com formulas seus valores são dados pela formula)*/

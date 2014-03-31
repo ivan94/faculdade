@@ -11,7 +11,12 @@ class MainWindow;
 
 class MainWindow : public QMainWindow
 {
+
+    bool docSaved;
+
     Q_OBJECT
+
+    void updateInterface();
 
 public:
     explicit MainWindow(QWidget *parent = 0);
@@ -26,10 +31,9 @@ private slots:
     void on_actionNew_triggered();
     void on_actionOpen_triggered();
     void on_actionSave_triggered();
-    void on_actionInsert_Row_triggered();
-    void on_actionInsert_Column_triggered();
-
     void on_actionSaveAs_triggered();
+
+    void on_actionSpreadSheet_triggered();
 
 protected:
 
