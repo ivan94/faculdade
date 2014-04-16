@@ -1,1 +1,5 @@
 build/
+build*/
+debug*/
+release*/
+*.pro.user*
