@@ -6,6 +6,7 @@
 
 package rmichatserver.services;
 
+import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.RemoteServer;
 import java.rmi.server.ServerNotActiveException;
@@ -13,6 +14,8 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import rmichatservices.ChatClientService;
+import rmichatservices.ChatServerService;
 
 /**
  *
@@ -25,8 +28,8 @@ public class ChatServerServiceImp extends UnicastRemoteObject implements ChatSer
     
 
     public ChatServerServiceImp() throws RemoteException {
-        this.clientNames = new HashMap<>();
-        this.callbacks = new HashMap<>();
+        this.clientNames = new HashMap<String, String>();
+        this.callbacks = new HashMap<String, ChatClientService>();
     }   
     
 
@@ -47,6 +50,8 @@ public class ChatServerServiceImp extends UnicastRemoteObject implements ChatSer
             Map.Entry<String, ChatClientService> entry = i.next();
             entry.getValue().receiveMessage(this.clientNames.get(entry.getKey()), message);
         }
+        
+        
     }
     
 }

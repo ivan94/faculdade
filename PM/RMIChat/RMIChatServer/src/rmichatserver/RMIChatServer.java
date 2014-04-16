@@ -11,13 +11,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.rmi.AlreadyBoundException;
-import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import rmichatserver.services.ChatServerService;
 import rmichatserver.services.ChatServerServiceImp;
+import rmichatservices.ChatServerService;
 
 /**
  *
@@ -36,7 +35,7 @@ public class RMIChatServer {
     
     public static void main(String[] args) throws AlreadyBoundException, MalformedURLException, RemoteException, IOException, NotBoundException {
         BufferedReader rd = new BufferedReader(new InputStreamReader(System.in));
-        registry = LocateRegistry.createRegistry(666);
+        registry = LocateRegistry.createRegistry(6666);
         ChatServerServiceImp css = new ChatServerServiceImp();
         registry.bind(ChatServerService.class.getSimpleName(), css);
         String command = "";
@@ -45,6 +44,11 @@ public class RMIChatServer {
         }
         registry.unbind(ChatServerService.class.getSimpleName());
         ChatServerServiceImp.unexportObject(css, false);
+        
+        
+        
+        
+        
     }
     
     

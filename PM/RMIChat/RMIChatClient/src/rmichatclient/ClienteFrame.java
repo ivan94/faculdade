@@ -7,15 +7,13 @@
 package rmichatclient;
 
 import java.awt.event.KeyEvent;
-import java.rmi.AccessException;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import rmichatclient.services.ChatClientServiceImp;
-import rmichatclient.services.ChatServerService;
+import rmichatservices.ChatServerService;
 
 /**
  *
@@ -128,12 +126,13 @@ public class ClienteFrame extends javax.swing.JFrame {
                     .addComponent(jLabel1)
                     .addComponent(UsernameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(IpField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(ConnectButton)
-                    .addComponent(PortField)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel3))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(PortField, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(IpField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(ConnectButton)
+                        .addComponent(jLabel2)
+                        .addComponent(jLabel3)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 279, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -151,6 +150,7 @@ public class ClienteFrame extends javax.swing.JFrame {
             try {
                 if(!this.InputMessage.getText().trim().equals(""))
                     this.service.sendMessage(this.InputMessage.getText());
+                this.InputMessage.setText("");
                 
             } catch (RemoteException ex) {
                 Logger.getLogger(ClienteFrame.class.getName()).log(Level.WARNING, null, ex);
@@ -171,9 +171,9 @@ public class ClienteFrame extends javax.swing.JFrame {
             this.registry = LocateRegistry.getRegistry(this.IpField.getText(), Integer.parseInt(this.PortField.getText()));
             this.service = (ChatServerService) this.registry.lookup(ChatServerService.class.getSimpleName());
             this.service.connectToServer(new ChatClientServiceImp(this), this.UsernameField.getText());
-            this.MessageArea.setText(this.MessageArea.getText() + "Conectado em" + this.IpField.getText()+"\n");
+            this.MessageArea.setText(this.MessageArea.getText() + "Conectado em " + this.IpField.getText()+"\n");
             this.connected = true;
-        }catch(NumberFormatException | RemoteException | NotBoundException e){
+        }catch(Exception e){
             Logger.getLogger(ClienteFrame.class.getName()).log(Level.SEVERE, null, e);
             this.MessageArea.setText(this.MessageArea.getText() + "Conexão falhou\n");
             this.connected = false;

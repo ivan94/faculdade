@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package rmichatclient.services;
+package rmichatservices;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

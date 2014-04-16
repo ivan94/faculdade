@@ -9,6 +9,7 @@ package rmichatclient.services;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import rmichatclient.ClienteFrame;
+import rmichatservices.ChatClientService;
 
 /**
  *
