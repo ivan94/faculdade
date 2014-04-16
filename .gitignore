@@ -3,3 +3,4 @@ build*/
 debug*/
 release*/
 *.pro.user*
+*.zip
