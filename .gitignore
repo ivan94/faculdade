@@ -4,3 +4,4 @@ debug*/
 release*/
 *.pro.user*
 *.zip
+/PM/RMI/nbproject/private/
