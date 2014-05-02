@@ -8,7 +8,6 @@ package david.ivan.rmi.registry;
 
 import david.ivan.rmi.Remote;
 import david.ivan.rmi.exceptions.RemoteException;
-import java.util.Dictionary;
 
 /**
  *
@@ -18,17 +17,17 @@ public class LocalRegistry implements Registry{
     
 
     @Override
-    public Remote lookup(String name) throws RemoteException {
+    public synchronized Remote lookup(String name) throws RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void bind(String name, Remote obj) {
+    public synchronized void bind(String name, Remote obj) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void unbind(String name) {
+    public synchronized void unbind(String name) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
