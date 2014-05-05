@@ -6,10 +6,16 @@
 
 package david.ivan.rmi;
 
+import java.net.URL;
+
 /**
  *
- * @author Ivan
+ * @author ivan
  */
-public class Naming {
+public interface NodeCommunicator {
+
+    public void connect(URL remoteURL);
+
+    public String getTypeName();
     
 }

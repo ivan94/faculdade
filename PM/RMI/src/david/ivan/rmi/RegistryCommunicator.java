@@ -6,10 +6,18 @@
 
 package david.ivan.rmi;
 
+import java.net.URL;
+
 /**
  *
- * @author Ivan
+ * @author ivan
  */
-public class Naming {
+public interface RegistryCommunicator {
+
+    public URL findRemote(String name);
+
+    public void bind(String name);
+
+    public void unbind(String name);
     
 }

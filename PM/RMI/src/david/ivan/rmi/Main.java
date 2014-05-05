@@ -8,8 +8,11 @@ package david.ivan.rmi;
 
 /**
  *
- * @author Ivan
+ * @author ivan
  */
-public class Naming {
+public class Main {
     
+    public static void main(String[] args) throws ClassNotFoundException{
+        
+    }
 }

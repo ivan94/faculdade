@@ -10,6 +10,7 @@ import david.ivan.rmi.exceptions.RemoteException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Proxy;
 import java.net.Socket;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
@@ -144,6 +145,9 @@ class SocketDispatcher implements RemoteDispatcher, Runnable{
             } catch (InterruptedException ex) { //Nunca deveria ser chamado, indica erro grave de implementação
                 Logger.getLogger(SocketDispatcher.class.getName()).log(Level.SEVERE, null, ex);
                 this.thread.interrupt();
+             
+             
+             
             }
         }
     }
