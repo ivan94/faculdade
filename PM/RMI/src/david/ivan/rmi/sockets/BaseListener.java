@@ -21,8 +21,10 @@ public abstract class BaseListener implements Runnable{
     public BaseListener() {
         this.running = false;
     }
-    
-    
+
+    public boolean isRunning() {
+        return running;
+    }
     
     public void start() throws IOException{
         t = new Thread(this);

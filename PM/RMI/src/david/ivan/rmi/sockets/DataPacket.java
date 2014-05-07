@@ -10,7 +10,7 @@ package david.ivan.rmi.sockets;
  *
  * @author ivan
  */
-class DataPacket {
+public class DataPacket {
     private int operation;
     private byte[] data;
     private int checksum;
@@ -71,15 +71,4 @@ class DataPacket {
                 return SocketOperation.UNKNOWN;
         }
     }
-}
-
-enum SocketOperation {
-    LOOKUP(0), BIND(1), UNBIND(2), INVOKE(3), ERROR(0xff), UNKNOWN(0xfe);
-
-    private final int val;
-    private SocketOperation(int val) {
-        this.val = val;
-    }
-    
-    public int getVal(){return this.val;}  
 }

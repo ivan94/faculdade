@@ -9,16 +9,17 @@ package david.ivan.rmi.sockets;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.Socket;
-
 /**
  *
  * @author ivan
  */
 public class SocketListener extends BaseListener{
-    private final Socket socket; 
+    private final Socket socket;
+    private final String address;
 
-    public SocketListener(Socket socket) throws IOException{
-        this.socket = socket;
+    public SocketListener(String address) throws IOException{
+        this.address = address;
+        this.socket = SocketManager.getConnection(address);
         if(this.socket.isClosed()){
             throw new IOException();
         }
@@ -34,5 +35,10 @@ public class SocketListener extends BaseListener{
             data[i] = is.readByte();
         }
         int checksum = is.readInt();
+        
+        DataPacket pac = new DataPacket(op, data, checksum);
+        
+        PacketProcessor.getProcessor().register(pac);
+        
     }
 }

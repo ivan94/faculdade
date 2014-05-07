@@ -33,6 +33,7 @@ public class SocketGatekeeper extends BaseListener{
     @Override
     public void start() throws IOException {
         this.door = new ServerSocket(this.port);
+        super.start();
     }
 
     @Override
@@ -40,6 +41,6 @@ public class SocketGatekeeper extends BaseListener{
         Socket s = this.door.accept();
         String addr = "rmi://" + s.getInetAddress().getHostName() + "/" + this.port;
         SocketManager.registerConnection(addr, s);
-        //TODO: start listener for this socket
+        ListenerManager.getListener(addr);
     }
 }
