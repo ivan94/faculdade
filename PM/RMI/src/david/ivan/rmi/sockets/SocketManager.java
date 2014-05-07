@@ -20,6 +20,7 @@ public class SocketManager {
     public static final int STANDART_PORT = 572;
     
     private static final HashMap<String, Socket> connections = new HashMap<String, Socket>();
+    private static final HashMap<String, SocketListener> listeners = new HashMap<String, SocketListener>();
     
     public synchronized static Socket getConnection(String address) throws MalformedURLException, IOException{
         Socket s = connections.get(address);
@@ -55,5 +56,9 @@ public class SocketManager {
         for(String k: connections.keySet()){
             closeConnection(k);
         }
+    }
+    
+    public synchronized static void putListener(String address, SocketListener listener){
+        listeners.put(address, listener);
     }
 }
