@@ -9,7 +9,8 @@ package david.ivan.rmi.sockets;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.Socket;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 
 /**
@@ -20,14 +21,13 @@ public class SocketManager {
     public static final int STANDART_PORT = 572;
     
     private static final HashMap<String, Socket> connections = new HashMap<String, Socket>();
-    private static final HashMap<String, SocketListener> listeners = new HashMap<String, SocketListener>();
     
     public synchronized static Socket getConnection(String address) throws MalformedURLException, IOException{
         Socket s = connections.get(address);
         if(s == null){
-            URL addr = new URL(address);
+            URI addr = parseURL(address);
             int port = addr.getPort();
-            if(port == -1){
+            if(port != -1){
                 s = new Socket(addr.getHost(), addr.getPort());
             }else{
                 s = new Socket(addr.getHost(), STANDART_PORT);
@@ -57,8 +57,28 @@ public class SocketManager {
             closeConnection(k);
         }
     }
-    
-    public synchronized static void putListener(String address, SocketListener listener){
-        listeners.put(address, listener);
+
+    private static URI parseURL(String url) throws MalformedURLException {
+        try{
+            URI uri = new URI(url);
+            String scheme = uri.getScheme();
+            String host = uri.getHost();
+            if(host == null){
+                throw new MalformedURLException();
+            }else{
+                if(scheme != null){
+                    if(scheme.equals("rmi")){
+                        return uri;
+                    }else{
+                        throw new MalformedURLException();
+                    }
+                }else{
+                    return new URI("rmi://"+host);
+                }
+            }
+        }catch(URISyntaxException ex){
+            throw new MalformedURLException();
+        }
+        
     }
 }

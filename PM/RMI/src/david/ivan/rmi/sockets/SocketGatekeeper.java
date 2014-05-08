@@ -39,7 +39,7 @@ public class SocketGatekeeper extends BaseListener{
     @Override
     public void listen() throws IOException {
         Socket s = this.door.accept();
-        String addr = "rmi://" + s.getInetAddress().getHostName() + "/" + this.port;
+        String addr = "rmi://" + s.getInetAddress().getHostName() + ":" + this.port;
         SocketManager.registerConnection(addr, s);
         ListenerManager.getListener(addr);
     }

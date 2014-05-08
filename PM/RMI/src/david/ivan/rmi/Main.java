@@ -6,13 +6,16 @@
 
 package david.ivan.rmi;
 
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+
 /**
  *
  * @author ivan
  */
 public class Main {
     
-    public static void main(String[] args) throws ClassNotFoundException{
+    public static void main(String[] args) throws ClassNotFoundException, MalformedURLException, URISyntaxException{
         
     }
 }
