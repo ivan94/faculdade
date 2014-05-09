@@ -5,64 +5,15 @@
  */
 package david.ivan.rmi.sockets;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
+import david.ivan.rmi.Processor;
 
 /**
  *
  * @author ivan
  */
-public abstract class PacketProcessor implements Runnable {
-
-    private static PacketProcessor processor;
-
-    public synchronized static PacketProcessor getProcessor() {
-        return processor;
+public abstract class PacketProcessor extends Processor implements Runnable {
+    public synchronized void register(DataPacket data) {
+        super.register(data);
     }
-
-    public synchronized static void setProcessor(PacketProcessor processor) {
-        PacketProcessor.processor = processor;
-    }
-
-    private final ConcurrentLinkedQueue<DataPacket> packets;
-    private Thread t;
-    private boolean running;
-
-    public PacketProcessor() {
-        this.packets = new ConcurrentLinkedQueue<DataPacket>();
-        this.running = false;
-    }
-
-    public void start() {
-        this.t = new Thread(this);
-        this.running = true;
-        this.t.start();
-    }
-
-    public synchronized void stop() {
-        this.running = false;
-        this.notify();
-    }
-
     public abstract void process(DataPacket packet);
-
-    public synchronized void register(DataPacket packet) {
-        this.packets.add(packet);
-        this.notify();
-    }
-
-    @Override
-    public synchronized void run() {
-        while (this.running) {
-            if (!this.packets.isEmpty()) {
-                this.process(this.packets.remove());
-            } else {
-                try {
-                    this.wait();
-                } catch (InterruptedException ex) {
-                    this.stop();
-                }
-            }
-        }
-    }
-
 }

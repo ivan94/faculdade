@@ -7,6 +7,7 @@
 package david.ivan.rmi.sockets;
 
 import david.ivan.rmi.BaseWorker;
+import david.ivan.rmi.Processor;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -17,6 +18,7 @@ import java.util.logging.Logger;
  */
 public class SocketListener extends BaseWorker{
     private final String address;
+    private PacketProcessor
 
     public SocketListener(String address) throws IOException{
         this.address = address;
