@@ -5,15 +5,19 @@
  */
 package david.ivan.rmi.sockets;
 
+import david.ivan.rmi.BaseWorker;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author ivan
  */
-public class SocketGatekeeper extends BaseListener{
+public class SocketGatekeeper extends BaseWorker{
 
     private ServerSocket door;
     private int port;
@@ -37,10 +41,31 @@ public class SocketGatekeeper extends BaseListener{
     }
 
     @Override
-    public void listen() throws IOException {
-        Socket s = this.door.accept();
-        String addr = "rmi://" + s.getInetAddress().getHostName() + ":" + this.port;
-        SocketManager.registerConnection(addr, s);
-        ListenerManager.getListener(addr);
+    public void stop() {
+        super.stop();
+        try {
+            this.door.close();
+        } catch (IOException ex) {
+            Logger.getLogger(SocketGatekeeper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    
+
+    @Override
+    public boolean doWork() {
+        try{
+            Socket s = this.door.accept();
+            String addr = "rmi://" + s.getInetAddress().getHostName() + ":" + this.port;
+            SocketManager.registerConnection(addr, s);
+            ListenerManager.getListener(addr).start();
+            return true;
+        }catch(SocketException ex){
+            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "LOG:", ex);
+            return false;
+        } catch (IOException ex) {
+            Logger.getLogger(SocketGatekeeper.class.getName()).log(Level.INFO, "LOG:", ex);
+            return false;
+        }
     }
 }

@@ -16,6 +16,6 @@ import java.net.URISyntaxException;
 public class Main {
     
     public static void main(String[] args) throws ClassNotFoundException, MalformedURLException, URISyntaxException{
-        
+        java.rmi.Naming n;
     }
 }

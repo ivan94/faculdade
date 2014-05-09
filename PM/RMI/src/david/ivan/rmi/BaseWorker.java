@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package david.ivan.rmi.sockets;
+package david.ivan.rmi;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -14,11 +14,11 @@ import java.util.logging.Logger;
  *
  * @author ivan
  */
-public abstract class BaseListener implements Runnable{
+public abstract class BaseWorker implements Runnable{
     private Thread t;
     private boolean running;
 
-    public BaseListener() {
+    public BaseWorker() {
         this.running = false;
     }
 
@@ -36,16 +36,13 @@ public abstract class BaseListener implements Runnable{
         this.running = false;
     }
     
-    protected abstract void listen() throws IOException;
+    protected abstract boolean doWork();
 
     @Override
     public void run() {
         while(this.running){
-            try{
-                this.listen();
-            }catch(IOException ex){
-                this.running = false;
-                Logger.getLogger(this.getClass().getName()).log(Level.INFO, null, ex);
+            if(!this.doWork()){
+                this.stop();
             }
         }
     }

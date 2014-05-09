@@ -20,7 +20,7 @@ import java.util.logging.Logger;
  *
  * @author ivan
  */
-public class RemoteRegistry implements Registry{
+public class RegistryReference implements Registry{
     private RegistryCommunicator rc;
     private NodeCommunicator nc;
     
@@ -37,10 +37,10 @@ public class RemoteRegistry implements Registry{
             Class stub = Class.forName(typeName);
             return (Remote) Proxy.newProxyInstance(stub.getClassLoader(), new Class[] {stub}, null);
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(RemoteRegistry.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RegistryReference.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         } catch (ClassCastException ex){
-            Logger.getLogger(RemoteRegistry.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RegistryReference.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
     }

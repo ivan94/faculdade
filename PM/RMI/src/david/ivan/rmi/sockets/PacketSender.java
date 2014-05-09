@@ -8,21 +8,20 @@ package david.ivan.rmi.sockets;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.Socket;
 
 /**
  *
  * @author ivan
  */
 public class PacketSender {
-    private final Socket socket;
+    private final String address;
 
     public PacketSender(String address) throws IOException {
-        this.socket = SocketManager.getConnection(address);
+        this.address = address;
     }
     
     public void send(DataPacket packet) throws IOException{
-        DataOutputStream os = (DataOutputStream)this.socket.getOutputStream();
+        DataOutputStream os = new DataOutputStream(SocketManager.getConnection(address).getOutputStream());
         int op = packet.getOperation();
         byte[] data = packet.getData();
         int size = data.length;

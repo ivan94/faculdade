@@ -38,8 +38,9 @@ public abstract class PacketProcessor implements Runnable {
         this.t.start();
     }
 
-    public void stop() {
+    public synchronized void stop() {
         this.running = false;
+        this.notify();
     }
 
     public abstract void process(DataPacket packet);
@@ -50,7 +51,7 @@ public abstract class PacketProcessor implements Runnable {
     }
 
     @Override
-    public void run() {
+    public synchronized void run() {
         while (this.running) {
             if (!this.packets.isEmpty()) {
                 this.process(this.packets.remove());

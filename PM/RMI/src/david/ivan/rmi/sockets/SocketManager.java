@@ -12,6 +12,8 @@ import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -24,7 +26,7 @@ public class SocketManager {
     
     public synchronized static Socket getConnection(String address) throws MalformedURLException, IOException{
         Socket s = connections.get(address);
-        if(s == null){
+        if(s == null || s.isClosed()){
             URI addr = parseURL(address);
             int port = addr.getPort();
             if(port != -1){
@@ -41,8 +43,13 @@ public class SocketManager {
         if(socket == null){
             throw new NullPointerException();
         }
-        if(!connections.containsKey(address)){
-            connections.put(address, socket);
+        Socket old = connections.put(address, socket);
+        if(old != null && !old.isClosed()){
+            try {
+                old.close();
+            } catch (IOException ex) {
+                Logger.getLogger(SocketManager.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
     
@@ -64,16 +71,12 @@ public class SocketManager {
             String scheme = uri.getScheme();
             String host = uri.getHost();
             if(host == null){
-                throw new MalformedURLException();
+                throw new MalformedURLException("No host specified");
             }else{
-                if(scheme != null){
-                    if(scheme.equals("rmi")){
-                        return uri;
-                    }else{
-                        throw new MalformedURLException();
-                    }
+                if(scheme != null && !scheme.equals("rmi")){
+                    throw new MalformedURLException("Unsupported protocol");
                 }else{
-                    return new URI("rmi://"+host);
+                    return uri;
                 }
             }
         }catch(URISyntaxException ex){

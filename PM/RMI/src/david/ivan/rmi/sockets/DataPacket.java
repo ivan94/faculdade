@@ -45,14 +45,22 @@ public class DataPacket {
         this.checksum = checksum;
     }
     
-    public boolean isCheckSumValid(){
-        int chk = this.checksum;
-        chk -= this.operation;
-        chk -= this.data.length;
+    public void generateChecksum(){
+        this.checksum = this.calculateChecksum();
+    }
+    
+    private int calculateChecksum(){
+        int chk = 0;
+        chk += this.operation;
+        chk += this.data.length;
         for(byte b: this.data){
-            chk -= b;
+            chk += b;
         }
-        return chk == 0;
+        return chk;
+    }
+    
+    public boolean isCheckSumValid(){
+        return this.checksum == this.calculateChecksum();
     }
     
     public SocketOperation getSocketOperation(){

@@ -13,7 +13,7 @@ import david.ivan.rmi.exceptions.RemoteException;
  *
  * @author Ivan
  */
-public class LocalRegistry implements Registry{
+public class RegistryImpl implements Registry{
     
 
     @Override
