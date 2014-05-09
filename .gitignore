@@ -5,3 +5,5 @@ release*/
 *.pro.user*
 *.zip
 /PM/RMI/nbproject/private/
+/PM/ServerTest/nbproject/private/
+/PM/ClientTest/nbproject/private/
