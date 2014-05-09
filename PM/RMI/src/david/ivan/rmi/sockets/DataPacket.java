@@ -6,19 +6,24 @@
 
 package david.ivan.rmi.sockets;
 
+import david.ivan.rmi.Data;
+import david.ivan.rmi.RemoteOperation;
+
 /**
  *
  * @author ivan
  */
-public class DataPacket {
+public class DataPacket implements Data{
     private int operation;
     private byte[] data;
     private int checksum;
+    private String address;
 
-    public DataPacket(byte operation, byte[] data, int checksum) {
+    public DataPacket(String address, byte operation, byte[] data, int checksum) {
         this.operation = ((int)operation) & 0xff; //garante que é tratado como positivo após converter
         this.data = data;
         this.checksum = checksum;
+        this.address = address;
     }
 
     public int getOperation() {
@@ -29,6 +34,7 @@ public class DataPacket {
         this.operation = operation;
     }
 
+    @Override
     public byte[] getData() {
         return data;
     }
@@ -63,20 +69,31 @@ public class DataPacket {
         return this.checksum == this.calculateChecksum();
     }
     
-    public SocketOperation getSocketOperation(){
+    @Override
+    public RemoteOperation getRemoteOperation(){
         switch(this.operation){
             case 0:
-                return SocketOperation.LOOKUP;
+                return RemoteOperation.LOOKUP;
             case 1:
-                return SocketOperation.BIND;
+                return RemoteOperation.BIND;
             case 2:
-                return SocketOperation.UNBIND;
+                return RemoteOperation.UNBIND;
             case 3:
-                return SocketOperation.INVOKE;
+                return RemoteOperation.INVOKE;
             case 0xff:
-                return SocketOperation.ERROR;
+                return RemoteOperation.ERROR;
             default:
-                return SocketOperation.UNKNOWN;
+                return RemoteOperation.UNKNOWN;
         }
+    }
+
+    @Override
+    public String getAddress() {
+       return this.address;
+    }
+
+    @Override
+    public void setAddress(String address) {
+        this.address = address;
     }
 }

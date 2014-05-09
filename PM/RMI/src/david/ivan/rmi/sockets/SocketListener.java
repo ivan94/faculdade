@@ -18,10 +18,18 @@ import java.util.logging.Logger;
  */
 public class SocketListener extends BaseWorker{
     private final String address;
-    private PacketProcessor
+    private Processor processor;
 
     public SocketListener(String address) throws IOException{
         this.address = address;
+    }
+
+    public Processor getProcessor() {
+        return processor;
+    }
+
+    public void setProcessor(Processor processor) {
+        this.processor = processor;
     }
     
     public synchronized void listen() throws IOException{
@@ -34,11 +42,9 @@ public class SocketListener extends BaseWorker{
         }
         int checksum = is.readInt();
 
-        DataPacket pac = new DataPacket(op, data, checksum);
-
-        PacketProcessor ps = PacketProcessor.getProcessor();
-        if (ps != null) {
-            ps.register(pac);
+        DataPacket pac = new DataPacket(this.address, op, data, checksum);
+        if (this.processor != null && this.processor.isRunning()) {
+            this.processor.register(pac);
         } else {
             throw new IOException();
         }
