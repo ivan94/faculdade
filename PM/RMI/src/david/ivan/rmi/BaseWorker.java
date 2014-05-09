@@ -7,11 +7,10 @@
 package david.ivan.rmi;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
- *
+ * Classe base de um processo que fica rodando realizando um trabalho repetidamente
+ * Feita para trabalhos que bloqueiam a thread, como espera de conexão, ou leitura de uma stream vinda de um socket
  * @author ivan
  */
 public abstract class BaseWorker implements Runnable{

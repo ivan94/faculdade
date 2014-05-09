@@ -10,7 +10,8 @@ import david.ivan.rmi.Remote;
 import david.ivan.rmi.exceptions.RemoteException;
 
 /**
- *
+ * Implementação local do servidor de nomes
+ * Associa nomes de interfaces remotas a endereços das interfaces
  * @author Ivan
  */
 public class RegistryImpl implements Registry{

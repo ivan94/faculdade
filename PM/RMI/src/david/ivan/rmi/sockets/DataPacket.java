@@ -10,7 +10,8 @@ import david.ivan.rmi.Data;
 import david.ivan.rmi.RemoteOperation;
 
 /**
- *
+ * Implementação da interface data para socket TCP
+ * 
  * @author ivan
  */
 public class DataPacket implements Data{

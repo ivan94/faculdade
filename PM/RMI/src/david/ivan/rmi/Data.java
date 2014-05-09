@@ -7,7 +7,8 @@
 package david.ivan.rmi;
 
 /**
- *
+ * Interface base que encapsula dados enviados pela rede
+ * Usado em processor, para se implementar protocolos de comunicação
  * @author Ivan
  */
 public interface Data {

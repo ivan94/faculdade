@@ -17,7 +17,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * Referencia para o servidor de nomes
+ * É o intermediador da aplicação. As chamadas de métodos devem enviar requisições para o servidor de nomes
  * @author ivan
  */
 public class RegistryReference implements Registry{

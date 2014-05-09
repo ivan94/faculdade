@@ -16,7 +16,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * Gerenciador de sockets abertos
+ * Todos sockets abertos devem ser registrados no SocketManager
+ * Funcionamento similar ao ListenerManager
  * @author ivan
  */
 public class SocketManager {

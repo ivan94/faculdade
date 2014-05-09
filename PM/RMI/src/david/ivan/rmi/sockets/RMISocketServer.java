@@ -11,7 +11,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- *
+ * Implementação da interface RMIServer para trabalhar com sockets tcp
+ * inicia o gatekeeper
  * @author Ivan
  */
 public class RMISocketServer implements RMIServer {

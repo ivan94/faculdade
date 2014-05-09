@@ -10,7 +10,8 @@ package david.ivan.rmi;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- *
+ * Classe base para processar requisições
+ * Usada para implementar um servidor que aguarda requisições
  * @author Ivan
  */
 public abstract class Processor implements Runnable{

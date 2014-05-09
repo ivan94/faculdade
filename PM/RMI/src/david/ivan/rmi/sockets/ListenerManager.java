@@ -10,12 +10,20 @@ import java.io.IOException;
 import java.util.HashMap;
 
 /**
- *
+ * Gerenciador de listeners de soquete. Associa o listener ao endereço do endpoint que está ouvindo
+ * É usada principalmente para fechar os listeners no processo de finalização da aplicação
  * @author ivan
  */
 public class ListenerManager {
     private static final HashMap<String, SocketListener> listeners = new HashMap<String, SocketListener>();
     
+    /**
+     * Procura o listener associado ao endereço informado
+     * Se o listener não existir é criado um novo, mas sem iniciar sua execução e sem um processor associado
+     * @param address
+     * @return
+     * @throws IOException 
+     */
     public synchronized static SocketListener getListener(String address) throws IOException{
         SocketListener listener = listeners.get(address);
         if(listener == null){

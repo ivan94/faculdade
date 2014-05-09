@@ -13,7 +13,8 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 /**
- *
+ * Ouve o endpoint por envio de pacotes.
+ * Após ouvir um pacote o mesmo é mandado para o processor associado para processamento e envio de resposta
  * @author ivan
  */
 public class SocketListener extends BaseWorker{

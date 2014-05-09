@@ -7,7 +7,9 @@
 package david.ivan.rmi;
 
 /**
- *
+ * Enumeração de operações suportadas pelo servidor
+ * Toda operação deve ter uma enumeração a representando
+ * Val indica o código da operação
  * @author ivan
  */
 public enum RemoteOperation {

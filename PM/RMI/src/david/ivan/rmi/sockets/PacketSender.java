@@ -10,7 +10,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 /**
- *
+ * Classe que abstrai o envio de pacotes ao endereço informado
  * @author ivan
  */
 public class PacketSender {

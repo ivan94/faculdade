@@ -15,7 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * Worker que monitora a porta especificada e aceita conexões
  * @author ivan
  */
 public class SocketGatekeeper extends BaseWorker{
