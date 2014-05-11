@@ -96,7 +96,7 @@ public class NameSocketProcessor extends Processor {
             String name = (String) is.readObject();
             String address = data.getAddress();
             
-            this.server.getRegistry().bind(name, new RemoteAddress(address));
+            this.server.getRegistry().bind(name, new RemoteAddress(address, null));
             
             DataPacket resp = new DataPacket(data.getAddress(), (byte)data.getOperation(), new byte[]{}, 0);
             resp.generateChecksum();

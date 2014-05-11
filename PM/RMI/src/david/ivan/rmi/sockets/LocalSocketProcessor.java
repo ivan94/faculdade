@@ -10,9 +10,12 @@ import david.ivan.rmi.Data;
 import david.ivan.rmi.Processor;
 import david.ivan.rmi.RemoteOperation;
 import david.ivan.rmi.exceptions.RemoteException;
+import david.ivan.rmi.registry.RegistryReference;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,16 +38,16 @@ public class LocalSocketProcessor extends Processor{
             DataPacket dp = (DataPacket) data;
             switch (dp.getRemoteOperation()) {
                 case LOOKUP:
-                    //this.runLookupOperation(dp);
+                    this.sendUnknownPacket(dp.getAddress());
                     break;
                 case BIND:
-                    //this.runBindOperation(dp);
+                    this.sendUnknownPacket(dp.getAddress());
                     break;
                 case UNBIND:
-                    //this.runUnbindOperation(dp);
+                    this.sendUnknownPacket(dp.getAddress());
                     break;
                 case INVOKE:
-                    this.sendUnknownPacket(dp.getAddress());
+                    this.runInvokeOperation(dp);
                     break;
                 case ERROR:
                     this.sendUnknownPacket(dp.getAddress());
@@ -52,8 +55,6 @@ public class LocalSocketProcessor extends Processor{
                 case UNKNOWN:
                     this.sendUnknownPacket(dp.getAddress());
                     break;
-                default:
-                    throw new AssertionError(dp.getRemoteOperation().name());
             }
         } else {
             throw new RuntimeException("Unsupported data type");
@@ -90,10 +91,21 @@ public class LocalSocketProcessor extends Processor{
         try {
             ObjectInputStream is = this.getInputStream(data);
             String name = (String) is.readObject();
+            String method = (String) is.readObject();
+            int argsN = is.readInt();
+            Object[] args = new Object[argsN];
+            for(int i = 0; i<argsN; i++){
+                args[i] = is.readObject();
+            }
             
-            this.server.getRegistry().unbind(name); //TODO: remover essa linha e implementar a operação efetivamente
+            Object ret = ((RegistryReference) this.server.getRegistry()).invoke(name, method, args);
             
-            DataPacket resp = new DataPacket(data.getAddress(), (byte)data.getOperation(), new byte[]{}, 0);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream os = new ObjectOutputStream(baos);
+            
+            os.writeObject(ret);
+            
+            DataPacket resp = new DataPacket(data.getAddress(), (byte)data.getOperation(), baos.toByteArray(), 0);
             resp.generateChecksum();
             new PacketSender(data.getAddress()).send(resp);
             
