@@ -15,6 +15,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,17 +49,9 @@ public class NameSocketProcessor extends Processor {
                 case UNBIND:
                     this.runUnbindOperation(dp);
                     break;
-                case INVOKE:
-                    this.sendUnknownPacket(dp.getAddress());
-                    break;
-                case ERROR:
-                    this.sendUnknownPacket(dp.getAddress());
-                    break;
-                case UNKNOWN:
-                    this.sendUnknownPacket(dp.getAddress());
-                    break;
                 default:
-                    throw new AssertionError(dp.getRemoteOperation().name());
+                    this.sendUnknownPacket(dp.getAddress());
+                    break;
             }
         } else {
             throw new RuntimeException("Unsupported data type");
@@ -70,7 +64,7 @@ public class NameSocketProcessor extends Processor {
     
     private void sendUnknownPacket(String address){
         try {
-            DataPacket p = new DataPacket(null, (byte)RemoteOperation.UNKNOWN.getVal(), new byte[0], 0);
+            DataPacket p = new DataPacket(null, (byte)RemoteOperation.UNKNOWN.getVal(), new byte[0]);
             p.generateChecksum();
             new PacketSender(address).send(p);
         } catch (IOException ex) {
@@ -81,7 +75,7 @@ public class NameSocketProcessor extends Processor {
     
     private void sendErrorPacket(String address, byte[] data){
         try {
-            DataPacket p = new DataPacket(null, (byte)RemoteOperation.ERROR.getVal(), data, 0);
+            DataPacket p = new DataPacket(null, (byte)RemoteOperation.ERROR.getVal(), data);
             p.generateChecksum();
             new PacketSender(address).send(p);
         } catch (IOException ex) {
@@ -94,11 +88,13 @@ public class NameSocketProcessor extends Processor {
         try {
             ObjectInputStream is = this.getInputStream(data);
             String name = (String) is.readObject();
+            int port = is.readInt();
             String address = data.getAddress();
+            URI uri = new URI(address);
             
-            this.server.getRegistry().bind(name, new RemoteAddress(address, null));
+            this.server.getRegistry().bind(name, new RemoteAddress("rmi://"+uri.getHost()+":"+port, null));
             
-            DataPacket resp = new DataPacket(data.getAddress(), (byte)data.getOperation(), new byte[]{}, 0);
+            DataPacket resp = new DataPacket(data.getAddress(), (byte)data.getOperation(), new byte[]{});
             resp.generateChecksum();
             new PacketSender(data.getAddress()).send(resp);
             
@@ -111,6 +107,8 @@ public class NameSocketProcessor extends Processor {
             this.sendErrorPacket(data.getAddress(), new byte[0]);
         } catch (RemoteException ex) {
             this.sendErrorPacket(data.getAddress(), new byte[]{(byte)data.getOperation()});
+        } catch (URISyntaxException ex) {
+            this.sendErrorPacket(data.getAddress(), new byte[0]);
         } 
     }
     
@@ -121,7 +119,7 @@ public class NameSocketProcessor extends Processor {
             
             this.server.getRegistry().unbind(name);
             
-            DataPacket resp = new DataPacket(data.getAddress(), (byte)data.getOperation(), new byte[]{}, 0);
+            DataPacket resp = new DataPacket(data.getAddress(), (byte)data.getOperation(), new byte[]{});
             resp.generateChecksum();
             new PacketSender(data.getAddress()).send(resp);
             
@@ -147,7 +145,7 @@ public class NameSocketProcessor extends Processor {
             ObjectOutputStream os = new ObjectOutputStream(baos);
             os.writeObject(address);
             
-            DataPacket resp = new DataPacket(data.getAddress(), (byte)data.getOperation(), baos.toByteArray(), 0);
+            DataPacket resp = new DataPacket(data.getAddress(), (byte)data.getOperation(), baos.toByteArray());
             resp.generateChecksum();
             new PacketSender(data.getAddress()).send(resp);
             

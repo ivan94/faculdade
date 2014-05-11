@@ -37,22 +37,10 @@ public class LocalSocketProcessor extends Processor{
         if (data instanceof DataPacket) {
             DataPacket dp = (DataPacket) data;
             switch (dp.getRemoteOperation()) {
-                case LOOKUP:
-                    this.sendUnknownPacket(dp.getAddress());
-                    break;
-                case BIND:
-                    this.sendUnknownPacket(dp.getAddress());
-                    break;
-                case UNBIND:
-                    this.sendUnknownPacket(dp.getAddress());
-                    break;
                 case INVOKE:
                     this.runInvokeOperation(dp);
                     break;
-                case ERROR:
-                    this.sendUnknownPacket(dp.getAddress());
-                    break;
-                case UNKNOWN:
+                default:
                     this.sendUnknownPacket(dp.getAddress());
                     break;
             }
@@ -67,7 +55,7 @@ public class LocalSocketProcessor extends Processor{
     
     private void sendUnknownPacket(String address){
         try {
-            DataPacket p = new DataPacket(null, (byte)RemoteOperation.UNKNOWN.getVal(), new byte[0], 0);
+            DataPacket p = new DataPacket(null, (byte)RemoteOperation.UNKNOWN.getVal(), new byte[0]);
             p.generateChecksum();
             new PacketSender(address).send(p);
         } catch (IOException ex) {
@@ -78,7 +66,7 @@ public class LocalSocketProcessor extends Processor{
     
     private void sendErrorPacket(String address, byte[] data){
         try {
-            DataPacket p = new DataPacket(null, (byte)RemoteOperation.ERROR.getVal(), data, 0);
+            DataPacket p = new DataPacket(null, (byte)RemoteOperation.ERROR.getVal(), data);
             p.generateChecksum();
             new PacketSender(address).send(p);
         } catch (IOException ex) {
@@ -105,7 +93,7 @@ public class LocalSocketProcessor extends Processor{
             
             os.writeObject(ret);
             
-            DataPacket resp = new DataPacket(data.getAddress(), (byte)data.getOperation(), baos.toByteArray(), 0);
+            DataPacket resp = new DataPacket(data.getAddress(), (byte)data.getOperation(), baos.toByteArray());
             resp.generateChecksum();
             new PacketSender(data.getAddress()).send(resp);
             

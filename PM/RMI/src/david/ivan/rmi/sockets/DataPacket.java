@@ -19,12 +19,20 @@ public class DataPacket implements Data{
     private byte[] data;
     private int checksum;
     private String address;
-
+    
     public DataPacket(String address, byte operation, byte[] data, int checksum) {
         this.operation = ((int)operation) & 0xff; //garante que é tratado como positivo após converter
         this.data = data;
-        this.checksum = checksum;
         this.address = address;
+        this.checksum = checksum;
+    }
+
+    public DataPacket(String address, byte operation, byte[] data) {
+        this.operation = ((int)operation) & 0xff; //garante que é tratado como positivo após converter
+        this.data = data;
+        this.address = address;
+        
+        this.checksum = this.calculateChecksum();
     }
 
     public int getOperation() {
