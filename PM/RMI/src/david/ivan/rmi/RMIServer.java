@@ -20,10 +20,7 @@ import david.ivan.rmi.exceptions.RemoteException;
 public interface RMIServer {
     static final int STANDART_PORT = 5572;
     
-    void startNameServer() throws RemoteException;
-    void startNameServer(int port) throws RemoteException;
-    void stopNameServer() throws RemoteException;
-    void startLocalServer() throws RemoteException;
-    void startLocalServer(int port) throws RemoteException;
-    void stopLocalServer() throws RemoteException;
+    void start() throws RemoteException;
+    void start(int port) throws RemoteException;
+    void stop() throws RemoteException;
 }

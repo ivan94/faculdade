@@ -5,8 +5,11 @@
  */
 package david.ivan.rmi.sockets;
 
+import david.ivan.rmi.Processor;
 import david.ivan.rmi.RMIServer;
 import david.ivan.rmi.exceptions.RemoteException;
+import david.ivan.rmi.registry.Registry;
+import david.ivan.rmi.registry.RegistryImpl;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -15,91 +18,58 @@ import java.util.ArrayList;
  * inicia o gatekeeper
  * @author Ivan
  */
-public class RMISocketServer implements RMIServer {
-
-    private ArrayList<String> lsConnections;
-    private ArrayList<String> nsConnections;
-    private SocketGatekeeper nameServer;
-    private SocketGatekeeper localServer;
+public abstract class RMISocketServer implements RMIServer {
+    private ArrayList<String> connections;
+    private SocketGatekeeper gatekeeper;
 
     public RMISocketServer() {
-        this.lsConnections = new ArrayList<String>();
-        this.nsConnections = new ArrayList<String>();
+        this.connections = new ArrayList<String>();
     }
 
-    public synchronized void registerLSConnection(String address) {
-        if (!this.lsConnections.contains(address)) {
-            this.lsConnections.add(address);
-        }
-    }
-    public synchronized void registerNSConnection(String address) {
-        if (!this.nsConnections.contains(address)) {
-            this.nsConnections.add(address);
+    public synchronized void registerConnection(String address) {
+        if (!this.connections.contains(address)) {
+            this.connections.add(address);
         }
     }
 
+    public abstract Registry getRegistry();
+
+    public abstract Processor getProcessor();
+
     @Override
-    public void startNameServer() throws RemoteException {
-        this.startNameServer(STANDART_PORT);
+    public void start() throws RemoteException {
+        this.start(STANDART_PORT);
     }
 
     @Override
-    public void startNameServer(int port) throws RemoteException {
+    public void start(int port) throws RemoteException {
         try {
-            this.stopNameServer();
-            //TODO criar o processor
-            this.nameServer = new SocketGatekeeper(port, null, this);
-            this.nameServer.start();
+            this.stop();
+            Processor p = this.getProcessor();
+            if(!p.isRunning()) p.start();
+            this.gatekeeper = new SocketGatekeeper(port, this);
+            this.gatekeeper.start();
         } catch (IOException ex) {
             throw new RemoteException(ex);
         }
     }
 
     @Override
-    public void stopNameServer() throws RemoteException {
+    public void stop() throws RemoteException {
         try {
-            if (this.nameServer != null && this.nameServer.isRunning()) {
-                this.nameServer.stop();
-                for (String addr : this.nsConnections) {
+            if (this.gatekeeper != null && this.gatekeeper.isRunning()) {
+                this.gatekeeper.stop();
+                for (String addr : this.connections) {
                     ListenerManager.closeListener(addr);
                     SocketManager.closeConnection(addr);
                 }
             }
+            if(this.getProcessor().isRunning())
+                this.getProcessor().stop();
         } catch (IOException ex) {
             throw new RemoteException(ex);
+        }finally{
+            this.getProcessor().stop();
         }
     }
-
-    @Override
-    public void startLocalServer() throws RemoteException {
-        this.startLocalServer(STANDART_PORT);
-    }
-
-    @Override
-    public void startLocalServer(int port) throws RemoteException {
-        try {
-            this.stopLocalServer();
-            //TODO criar o processor
-            this.localServer = new SocketGatekeeper(port, null, this);
-            this.localServer.start();
-        } catch (IOException ex) {
-            throw new RemoteException(ex);
-        }
-    }
-
-    @Override
-    public void stopLocalServer() throws RemoteException {
-        try {
-            if (this.localServer != null && this.localServer.isRunning()) {
-                this.localServer.stop();
-                for (String addr : this.lsConnections) {
-                    ListenerManager.closeListener(addr);
-                    SocketManager.closeConnection(addr);
-                }
-            }
-        } catch (IOException ex) {
-            throw new RemoteException(ex);
-        }
-    }
-
 }

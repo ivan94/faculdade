@@ -6,8 +6,7 @@
 
 package david.ivan.rmi;
 
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  *
@@ -15,7 +14,20 @@ import java.net.URISyntaxException;
  */
 public class Main {
     
-    public static void main(String[] args) throws ClassNotFoundException, MalformedURLException, URISyntaxException{
-        java.rmi.Naming n;
+    public static void main(String[] args) throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException{
+        Main main = new Main();
+        
+        int s = 6;
+        Object os = s;
+        
+        Main.class.getMethod("m", os.getClass()).invoke(main, 5);
+        
+        
+        System.out.println(os.getClass().getName());
+        
+    }
+    
+    public void m(int o){
+        System.err.println(o);
     }
 }

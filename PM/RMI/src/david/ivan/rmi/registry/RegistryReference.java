@@ -10,6 +10,7 @@ import david.ivan.rmi.NodeCommunicator;
 import david.ivan.rmi.Remote;
 import david.ivan.rmi.RegistryCommunicator;
 import david.ivan.rmi.exceptions.RemoteException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Proxy;
 import java.net.URL;
 import java.util.HashMap;
@@ -56,6 +57,35 @@ public class RegistryReference implements Registry{
     public void unbind(String name) {
         rc.unbind(name);
         this.boundObjects.remove(name);
+    }
+    
+    public Object invoke(String name, String method, Object[] args) throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException{
+        Remote obj = this.boundObjects.get(name);
+        Class[] argTypes = new Class[args.length];
+        for(int i=0; i<args.length; i++){
+            if(args[i].getClass().equals(Byte.class)){
+                argTypes[i] = byte.class;
+            }else if(args[i].getClass().equals(Short.class)){
+                argTypes[i] = short.class;
+            }else if(args[i].getClass().equals(Integer.class)){
+                argTypes[i] = int.class;
+            }else if(args[i].getClass().equals(Long.class)){
+                argTypes[i] = long.class;
+            }else if(args[i].getClass().equals(Float.class)){
+                argTypes[i] = float.class;
+            }else if(args[i].getClass().equals(Double.class)){
+                argTypes[i] = double.class;
+            }else if(args[i].getClass().equals(Character.class)){
+                argTypes[i] = char.class;
+            }else if(args[i].getClass().equals(Boolean.class)){
+                argTypes[i] = boolean.class;
+            }else{
+                //assumir que é metodo remoto
+            }
+            
+        }
+        return obj.getClass().getMethod(method, argTypes).invoke(obj, args);
+        
     }
     
     

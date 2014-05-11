@@ -15,6 +15,6 @@ import david.ivan.rmi.exceptions.RemoteException;
  */
 public interface Registry {
     public Object lookup(String name) throws RemoteException;
-    public void bind(String name, Remote obj);
-    public void unbind(String name);
+    public void bind(String name, Remote obj) throws RemoteException;
+    public void unbind(String name) throws RemoteException;
 }

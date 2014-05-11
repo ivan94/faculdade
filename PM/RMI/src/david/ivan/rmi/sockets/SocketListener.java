@@ -33,7 +33,7 @@ public class SocketListener extends BaseWorker{
         this.processor = processor;
     }
     
-    public synchronized void listen() throws IOException{
+    public synchronized DataPacket listen() throws IOException{
         DataInputStream is = new DataInputStream(SocketManager.getConnection(this.address).getInputStream());
         byte op = is.readByte();
         int size = is.readInt();
@@ -46,9 +46,9 @@ public class SocketListener extends BaseWorker{
         DataPacket pac = new DataPacket(this.address, op, data, checksum);
         if (this.processor != null && this.processor.isRunning()) {
             this.processor.register(pac);
-        } else {
-            throw new IOException();
         }
+        
+        return pac;
     }
     
     @Override

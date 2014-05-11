@@ -22,18 +22,15 @@ public class SocketGatekeeper extends BaseWorker{
 
     private ServerSocket door;
     private int port;
-    private Processor processor;
     private RMISocketServer server;
 
-    public SocketGatekeeper(Processor processor, RMISocketServer server) {
+    public SocketGatekeeper( RMISocketServer server) {
         this.port = SocketManager.STANDART_PORT;
-        this.processor = processor;
         this.server = server;
     }
 
-    public SocketGatekeeper(int port, Processor processor, RMISocketServer server) {
+    public SocketGatekeeper(int port, RMISocketServer server) {
         this.port = port;
-        this.processor = processor;
         this.server = server;
     }
 
@@ -66,7 +63,7 @@ public class SocketGatekeeper extends BaseWorker{
             String addr = "rmi://" + s.getInetAddress().getHostName() + ":" + this.port;
             SocketManager.registerConnection(addr, s);
             SocketListener l = ListenerManager.getListener(addr);
-            l.setProcessor(processor);
+            l.setProcessor(this.server.getProcessor());
             l.start();
             return true;
         }catch(SocketException ex){
