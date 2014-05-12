@@ -57,14 +57,7 @@ public class LocateRegistry {
     
     public static void stopServer() throws RemoteException{
         if(server!= null && server.isRunning()){
-            try {
                 server.stop();
-                ListenerManager.closeAllListeners();
-                SocketManager.closeAllConnections();
-            } catch (IOException ex) {
-                Logger.getLogger(LocateRegistry.class.getName()).log(Level.SEVERE, "LOG:", ex);
-                throw new RemoteException(ex);
-            }
             
         }
     }

@@ -8,7 +8,6 @@ package rmichatserver;
 
 import david.ivan.rmi.Naming;
 import david.ivan.rmi.exceptions.RemoteException;
-import david.ivan.rmi.registry.LocateRegistry;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;

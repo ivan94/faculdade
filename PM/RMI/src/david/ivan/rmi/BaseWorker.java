@@ -7,6 +7,8 @@
 package david.ivan.rmi;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Classe base de um processo que fica rodando realizando um trabalho repetidamente
@@ -31,7 +33,7 @@ public abstract class BaseWorker implements Runnable{
         this.t.start();
     }
     
-    public void stop(){
+    public void stop() throws IOException{
         this.running = false;
     }
     
@@ -41,7 +43,11 @@ public abstract class BaseWorker implements Runnable{
     public void run() {
         while(this.running){
             if(!this.doWork()){
-                this.stop();
+                try {
+                    this.stop();
+                } catch (IOException ex) {
+                    Logger.getLogger(BaseWorker.class.getName()).log(Level.SEVERE, "LOG", ex);
+                }
             }
         }
     }

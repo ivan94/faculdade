@@ -77,7 +77,6 @@ public abstract class RMISocketServer implements RMIServer {
                 this.gatekeeper.stop();
                 for (String addr : this.connections) {
                     ListenerManager.closeListener(addr);
-                    SocketManager.closeConnection(addr);
                 }
             }
             if(this.getProcessor().isRunning())

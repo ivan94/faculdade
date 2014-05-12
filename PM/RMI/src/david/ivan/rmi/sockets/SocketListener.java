@@ -32,6 +32,15 @@ public class SocketListener extends BaseWorker{
     public void setProcessor(Processor processor) {
         this.processor = processor;
     }
+
+    @Override
+    public void stop() throws IOException {
+        super.stop(); //To change body of generated methods, choose Tools | Templates.
+        ListenerManager.removeListener(address);
+        SocketManager.closeConnection(address);
+    }
+    
+    
     
     public synchronized DataPacket listen() throws IOException{
         DataInputStream is = new DataInputStream(SocketManager.getConnection(this.address).getInputStream());

@@ -52,7 +52,7 @@ public class SocketGatekeeper extends BaseWorker{
     }
 
     @Override
-    public void stop() {
+    public void stop() throws IOException {
         super.stop();
         try {
             this.door.close();

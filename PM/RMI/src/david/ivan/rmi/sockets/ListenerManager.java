@@ -33,15 +33,19 @@ public class ListenerManager {
         return listener;
     }
     
-    public synchronized static void closeListener(String address){
+    public synchronized static void closeListener(String address) throws IOException{
         SocketListener l = listeners.remove(address);
         if(l != null && l.isRunning()){
             l.stop();
         }
     }
-    public synchronized static void closeAllListeners(){
+    public synchronized static void closeAllListeners() throws IOException{
         for(String k : listeners.keySet()){
             closeListener(k);
         }
+    }
+    
+    public synchronized static void removeListener(String address){
+        listeners.remove(address);
     }
 }
