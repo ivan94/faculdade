@@ -6,8 +6,8 @@
 
 package rmichatservices;
 
-import java.rmi.Remote;
-import java.rmi.RemoteException;
+import david.ivan.rmi.Remote;
+import david.ivan.rmi.exceptions.RemoteException;
 
 /**
  *
@@ -15,14 +15,9 @@ import java.rmi.RemoteException;
  */
 public interface ChatServerService extends Remote{
 
-    /**
-     *
-     * @param client
-     * @param username
-     * @throws RemoteException
-     */
-    public void connectToServer(ChatClientService client, String username) throws RemoteException;
-    public void sendMessage(String message) throws RemoteException;
+
+    public int connectToServer(ChatClientService client, String username) throws RemoteException;
+    public void sendMessage(int id, String message) throws RemoteException;
     
     
 }

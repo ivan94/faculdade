@@ -13,7 +13,7 @@ package david.ivan.rmi;
  * @author ivan
  */
 public enum RemoteOperation {
-    LOOKUP(0), BIND(1), UNBIND(2), INVOKE(3), ERROR(0xff), UNKNOWN(0xfe);
+    LOOKUP(0), BIND(1), UNBIND(2), INVOKE(3), GETTYPE(4), ERROR(0xff), UNKNOWN(0xfe);
 
     private final int val;
     private RemoteOperation(int val) {

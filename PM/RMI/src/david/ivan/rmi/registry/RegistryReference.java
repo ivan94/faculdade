@@ -6,14 +6,14 @@
 
 package david.ivan.rmi.registry;
 
-import david.ivan.rmi.NodeCommunicator;
+import david.ivan.rmi.RMIClient;
+import david.ivan.rmi.RMIServer;
 import david.ivan.rmi.Remote;
-import david.ivan.rmi.RegistryCommunicator;
 import david.ivan.rmi.RemoteAddress;
+import david.ivan.rmi.RemoteInvocationHandler;
 import david.ivan.rmi.exceptions.RemoteException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Proxy;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,40 +24,59 @@ import java.util.logging.Logger;
  * @author ivan
  */
 public class RegistryReference implements Registry{
-    private RegistryCommunicator rc;
-    private NodeCommunicator nc;
+    private RMIClient client;
+    private RMIServer server;
+    private String address;
     
     private HashMap<String, Remote> boundObjects;
-    
+
+    public RegistryReference(String address, RMIClient client, RMIServer server) {
+        this.client = client;
+        this.server = server;
+        this.address = address;
+        this.boundObjects = new HashMap<String, Remote>();
+    }
     
     @Override
     public Remote lookup(String name) throws RemoteException {
-        try {
-            URL remoteURL =  rc.findRemote(name);
-            String key; //remote object key, must be obtained throught processing of name variable
-            nc.connect(remoteURL);
-            String typeName = nc.getTypeName();
-            Class stub = Class.forName(typeName);
-            return (Remote) Proxy.newProxyInstance(stub.getClassLoader(), new Class[] {stub}, null);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(RegistryReference.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        } catch (ClassCastException ex){
-            Logger.getLogger(RegistryReference.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
+        String endpoitAddress = client.lookup(address, name);
+        Class type = client.getRemoteType(endpoitAddress, name);
+        Remote proxy = (Remote)Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[]{type}, new RemoteInvocationHandler(client, endpoitAddress, name, this));
+        return proxy;
     }
 
     @Override
-    public void bind(String name, Remote obj) {
-        rc.bind(name);
+    public void bind(String name, Remote obj) throws RemoteException {
+        if(!this.server.isRunning()){
+            this.server.start();
+        }
+        client.bind(address, name, this.server.getPort());
         this.boundObjects.put(name, obj);
     }
 
     @Override
-    public void unbind(String name) {
-        rc.unbind(name);
+    public void unbind(String name) throws RemoteException {
+        this.client.unbind(address, name);
         this.boundObjects.remove(name);
+        if(this.boundObjects.isEmpty() && this.server.isRunning()){
+            this.server.stop();
+        }
+    }
+    
+    public String getRemoteType(String name) throws RemoteException{
+        Remote obj = this.boundObjects.get(name);
+        if(obj == null){
+            throw new RemoteException();
+        }
+        Class remoteInterface = null;
+        for(Class itf : obj.getClass().getInterfaces()){
+            if(Remote.class.isAssignableFrom(itf)){
+                remoteInterface = itf;
+                break;
+            }
+        }
+        if(remoteInterface == null) throw new RemoteException();
+        return remoteInterface.getName();
     }
     
     public Object invoke(String name, String method, Object[] args) throws RemoteException{
@@ -112,6 +131,15 @@ public class RegistryReference implements Registry{
         }
         
     }
+
+    @Override
+    protected void finalize() throws Throwable {
+        for(String name : this.boundObjects.keySet()){
+            this.unbind(name);
+        }
+    }
+    
+    
     
     
     

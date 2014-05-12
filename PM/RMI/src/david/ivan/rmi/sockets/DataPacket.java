@@ -89,6 +89,8 @@ public class DataPacket implements Data{
                 return RemoteOperation.UNBIND;
             case 3:
                 return RemoteOperation.INVOKE;
+            case 4:
+                return RemoteOperation.GETTYPE;
             case 0xff:
                 return RemoteOperation.ERROR;
             default:

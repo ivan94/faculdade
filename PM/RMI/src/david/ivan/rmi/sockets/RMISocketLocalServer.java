@@ -22,9 +22,14 @@ public class RMISocketLocalServer extends RMISocketServer{
     @Override
     public Registry getRegistry() {
         if(this.registry == null)
-            this.registry = new RegistryReference();
+            throw new NullPointerException();
         return this.registry;
     }
+
+    public void setRegistry(RegistryReference registry) {
+        this.registry = registry;
+    }
+    
 
     @Override
     public Processor getProcessor() {

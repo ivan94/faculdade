@@ -6,6 +6,7 @@
 
 package david.ivan.rmi.sockets;
 
+import david.ivan.rmi.RMIClient;
 import david.ivan.rmi.RemoteOperation;
 import david.ivan.rmi.exceptions.RemoteException;
 import java.io.ByteArrayInputStream;
@@ -18,7 +19,7 @@ import java.io.ObjectOutputStream;
  *
  * @author administracao
  */
-public class RMISocketClient {
+public class RMISocketClient implements RMIClient{
     
     private byte[] toByteArray(Object... args) throws IOException{
         ByteArrayOutputStream baos  = new ByteArrayOutputStream();
@@ -29,6 +30,7 @@ public class RMISocketClient {
         return baos.toByteArray();
     }
     
+    @Override
     public void bind(String address, String name, int port) throws RemoteException{
         try {
             PacketSender sender = new PacketSender(address);
@@ -38,7 +40,7 @@ public class RMISocketClient {
             sender.send(data);
             
             data = l.listen();
-            if(data.getRemoteOperation() != RemoteOperation.BIND){
+            if(!data.isCheckSumValid() || data.getRemoteOperation() != RemoteOperation.BIND){
                 throw new RemoteException();
             }
             
@@ -47,6 +49,7 @@ public class RMISocketClient {
         }
     }
     
+    @Override
     public void unbind(String address, String name) throws RemoteException{
         try {
             PacketSender sender = new PacketSender(address);
@@ -56,7 +59,7 @@ public class RMISocketClient {
             sender.send(data);
             
             data = l.listen();
-            if(data.getRemoteOperation() != RemoteOperation.UNBIND){
+            if(!data.isCheckSumValid() || data.getRemoteOperation() != RemoteOperation.UNBIND){
                 throw new RemoteException();
             }
             
@@ -65,6 +68,7 @@ public class RMISocketClient {
         }
     }
     
+    @Override
     public String lookup(String address, String name) throws RemoteException{
         try {
             PacketSender sender = new PacketSender(address);
@@ -74,7 +78,7 @@ public class RMISocketClient {
             sender.send(data);
             
             data = l.listen();
-            if(data.getRemoteOperation() != RemoteOperation.LOOKUP){
+            if(!data.isCheckSumValid() || data.getRemoteOperation() != RemoteOperation.LOOKUP){
                 throw new RemoteException();
             }
             
@@ -89,21 +93,24 @@ public class RMISocketClient {
         }
     }
     
+    @Override
     public Object invoke(String address, String name, String method, Object[] args) throws RemoteException{
         try {
             PacketSender sender = new PacketSender(address);
             SocketListener l = new SocketListener(address);
             
-            byte[] d1 = this.toByteArray(name, method);
-            byte[] d2 = this.toByteArray(args);
-            byte[] load = new byte[d1.length + d2.length];
-            System.arraycopy(d1, 0, load, 0, d1.length);
-            System.arraycopy(d2, 0, load, d1.length, d2.length);
+            Object[] payload = new Object[args.length+3];
+            payload[0] = name;
+            payload[1] = method;
+            payload[2] = (Integer)args.length;
+            for(int i =3; i<payload.length; i++){
+                payload[i] = args[i-3];
+            }
             
-            sender.send(new DataPacket(address, (byte)RemoteOperation.INVOKE.getVal(), load));
+            sender.send(new DataPacket(address, (byte)RemoteOperation.INVOKE.getVal(), this.toByteArray(payload)));
             DataPacket data = l.listen();
             
-            if(data.getRemoteOperation() != RemoteOperation.INVOKE){
+            if(!data.isCheckSumValid() || data.getRemoteOperation() != RemoteOperation.INVOKE){
                 throw new RemoteException();
             }
             
@@ -114,6 +121,44 @@ public class RMISocketClient {
         } catch (IOException ex) {
             throw new RemoteException(ex);
         } catch (ClassNotFoundException ex) {
+            throw new RemoteException(ex);
+        }
+    }
+    
+    @Override
+    public Class getRemoteType(String address, String name) throws RemoteException{
+        try {
+            PacketSender sender = new PacketSender(address);
+            SocketListener l = new SocketListener(address);
+            
+            byte[] d1 = this.toByteArray(name);
+            
+            sender.send(new DataPacket(address, (byte)RemoteOperation.GETTYPE.getVal(), d1));
+            DataPacket data = l.listen();
+            
+            if(!data.isCheckSumValid() || data.getRemoteOperation() != RemoteOperation.GETTYPE){
+                throw new RemoteException();
+            }
+            
+            ByteArrayInputStream bais = new ByteArrayInputStream(data.getData());
+            ObjectInputStream is = new ObjectInputStream(bais);
+            
+            String className = (String) is.readObject();
+            
+            return Class.forName(className);
+            
+        } catch (IOException ex) {
+            throw new RemoteException(ex);
+        } catch (ClassNotFoundException ex) {
+            throw new RemoteException(ex);
+        }
+    }
+    
+    @Override
+    public void closeConnection(String address) throws RemoteException{
+        try {
+            SocketManager.closeConnection(address);
+        } catch (IOException ex) {
             throw new RemoteException(ex);
         }
     }

@@ -7,6 +7,8 @@
 package david.ivan.rmi;
 
 import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  *
@@ -14,16 +16,16 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class Main {
     
-    public static void main(String[] args) throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException{
-        Main main = new Main();
+    public static void main(String[] args) throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, URISyntaxException{
+        String t = "rmi://a";
         
-        int s = 6;
-        Object os = s;
-        
-        Main.class.getMethod("m", os.getClass()).invoke(main, 5);
-        
-        
-        System.out.println(os.getClass().getName());
+        URI uri = new URI(t);
+        System.out.println(uri.getScheme());
+        System.out.println(uri.getHost());
+        System.out.println(uri.getPort());
+        System.out.println(uri.getPath());
+        System.out.println(uri.getQuery());
+        System.out.println(uri.getFragment());
         
     }
     

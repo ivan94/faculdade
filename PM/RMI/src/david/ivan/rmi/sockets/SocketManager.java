@@ -6,12 +6,14 @@
 
 package david.ivan.rmi.sockets;
 
+import david.ivan.rmi.registry.LocateRegistry;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,7 +26,7 @@ import java.util.logging.Logger;
 public class SocketManager {
     public static final int STANDART_PORT = 572;
     
-    private static final HashMap<String, Socket> connections = new HashMap<String, Socket>();
+    private static HashMap<String, Socket> connections = new HashMap<String, Socket>();
     
     public synchronized static Socket getConnection(String address) throws MalformedURLException, IOException{
         Socket s = connections.get(address);
@@ -34,7 +36,7 @@ public class SocketManager {
             if(port != -1){
                 s = new Socket(addr.getHost(), addr.getPort());
             }else{
-                s = new Socket(addr.getHost(), STANDART_PORT);
+                s = new Socket(addr.getHost(), LocateRegistry.STANDART_PORT);
             }
             connections.put(address, s);
         }
@@ -62,9 +64,13 @@ public class SocketManager {
         }
     }
     public synchronized static void closeAllConnections() throws IOException{
-        for(String k: connections.keySet()){
-            closeConnection(k);
+        for(Map.Entry<String, Socket> entry: connections.entrySet()){
+            Socket s = entry.getValue();
+            if(s != null){
+                s.close();
+            }
         }
+        connections = new HashMap<String, Socket>();
     }
 
     private static URI parseURL(String url) throws MalformedURLException {

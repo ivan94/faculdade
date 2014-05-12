@@ -39,19 +39,23 @@ public class NameSocketProcessor extends Processor {
     public void process(Data data) {
         if (data instanceof DataPacket) {
             DataPacket dp = (DataPacket) data;
-            switch (dp.getRemoteOperation()) {
-                case LOOKUP:
-                    this.runLookupOperation(dp);
-                    break;
-                case BIND:
-                    this.runBindOperation(dp);
-                    break;
-                case UNBIND:
-                    this.runUnbindOperation(dp);
-                    break;
-                default:
-                    this.sendUnknownPacket(dp.getAddress());
-                    break;
+            if (dp.isCheckSumValid()) {
+                switch (dp.getRemoteOperation()) {
+                    case LOOKUP:
+                        this.runLookupOperation(dp);
+                        break;
+                    case BIND:
+                        this.runBindOperation(dp);
+                        break;
+                    case UNBIND:
+                        this.runUnbindOperation(dp);
+                        break;
+                    default:
+                        this.sendUnknownPacket(dp.getAddress());
+                        break;
+                }
+            }else{
+                this.sendErrorPacket(dp.getAddress(), new byte[0]);
             }
         } else {
             throw new RuntimeException("Unsupported data type");
@@ -88,7 +92,7 @@ public class NameSocketProcessor extends Processor {
         try {
             ObjectInputStream is = this.getInputStream(data);
             String name = (String) is.readObject();
-            int port = is.readInt();
+            int port = (Integer)is.readObject();
             String address = data.getAddress();
             URI uri = new URI(address);
             

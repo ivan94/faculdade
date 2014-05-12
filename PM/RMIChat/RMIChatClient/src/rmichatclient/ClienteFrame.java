@@ -6,10 +6,9 @@
 
 package rmichatclient;
 
+import david.ivan.rmi.Naming;
+import david.ivan.rmi.exceptions.RemoteException;
 import java.awt.event.KeyEvent;
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import rmichatclient.services.ChatClientServiceImp;
@@ -23,7 +22,6 @@ public class ClienteFrame extends javax.swing.JFrame {
     
     private boolean connected = false;
     private ChatServerService service;
-    Registry registry = null;
     
     /**
      * Creates new form ClienteFrame
@@ -149,7 +147,7 @@ public class ClienteFrame extends javax.swing.JFrame {
         if(this.connected){
             try {
                 if(!this.InputMessage.getText().trim().equals(""))
-                    this.service.sendMessage(this.InputMessage.getText());
+                    this.service.sendMessage(this.id, this.InputMessage.getText());
                 this.InputMessage.setText("");
                 
             } catch (RemoteException ex) {
@@ -168,12 +166,11 @@ public class ClienteFrame extends javax.swing.JFrame {
     private void ConnectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ConnectButtonActionPerformed
         try {
             this.MessageArea.setText("Conectando no servidor... \n");
-            this.registry = LocateRegistry.getRegistry(this.IpField.getText(), Integer.parseInt(this.PortField.getText()));
-            this.service = (ChatServerService) this.registry.lookup(ChatServerService.class.getSimpleName());
-            this.service.connectToServer(new ChatClientServiceImp(this), this.UsernameField.getText());
+            this.service = (ChatServerService) Naming.lookup(ChatServerService.class.getSimpleName());
+            this.id = this.service.connectToServer(new ChatClientServiceImp(this), this.UsernameField.getText());
             this.MessageArea.setText(this.MessageArea.getText() + "Conectado em " + this.IpField.getText()+"\n");
             this.connected = true;
-        }catch(Exception e){
+        }catch(RemoteException e){
             Logger.getLogger(ClienteFrame.class.getName()).log(Level.SEVERE, null, e);
             this.MessageArea.setText(this.MessageArea.getText() + "Conexão falhou\n");
             this.connected = false;
@@ -226,7 +223,8 @@ public class ClienteFrame extends javax.swing.JFrame {
             }
         });
     }
-
+    
+    private int id;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ConnectButton;
     private javax.swing.JTextField InputMessage;

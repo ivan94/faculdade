@@ -6,8 +6,8 @@
 
 package rmichatservices;
 
-import java.rmi.Remote;
-import java.rmi.RemoteException;
+import david.ivan.rmi.Remote;
+import david.ivan.rmi.exceptions.RemoteException;
 
 /**
  *

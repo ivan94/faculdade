@@ -9,7 +9,6 @@ import david.ivan.rmi.Processor;
 import david.ivan.rmi.RMIServer;
 import david.ivan.rmi.exceptions.RemoteException;
 import david.ivan.rmi.registry.Registry;
-import david.ivan.rmi.registry.RegistryImpl;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -21,10 +20,27 @@ import java.util.ArrayList;
 public abstract class RMISocketServer implements RMIServer {
     private ArrayList<String> connections;
     private SocketGatekeeper gatekeeper;
+    private int port = -1;
 
     public RMISocketServer() {
         this.connections = new ArrayList<String>();
     }
+
+    @Override
+    public int getPort() {
+        if(this.isRunning()){
+            return this.gatekeeper.getPort();
+        }else{
+            return this.port;
+        }
+    }
+
+    @Override
+    public boolean isRunning() {
+        return this.gatekeeper != null && this.gatekeeper.isRunning();
+    }
+    
+    
 
     public synchronized void registerConnection(String address) {
         if (!this.connections.contains(address)) {
@@ -38,7 +54,7 @@ public abstract class RMISocketServer implements RMIServer {
 
     @Override
     public void start() throws RemoteException {
-        this.start(STANDART_PORT);
+        this.start(0);
     }
 
     @Override

@@ -6,8 +6,7 @@
 
 package rmichatclient.services;
 
-import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
+import david.ivan.rmi.exceptions.RemoteException;
 import rmichatclient.ClienteFrame;
 import rmichatservices.ChatClientService;
 
@@ -15,7 +14,7 @@ import rmichatservices.ChatClientService;
  *
  * @author Ivan
  */
-public class ChatClientServiceImp extends UnicastRemoteObject implements ChatClientService{
+public class ChatClientServiceImp implements ChatClientService{
     
     private final ClienteFrame frame;
     

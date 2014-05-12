@@ -6,7 +6,6 @@
 package david.ivan.rmi.sockets;
 
 import david.ivan.rmi.BaseWorker;
-import david.ivan.rmi.Processor;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -25,7 +24,7 @@ public class SocketGatekeeper extends BaseWorker{
     private RMISocketServer server;
 
     public SocketGatekeeper( RMISocketServer server) {
-        this.port = SocketManager.STANDART_PORT;
+        this.port = 0;
         this.server = server;
     }
 
@@ -34,6 +33,14 @@ public class SocketGatekeeper extends BaseWorker{
         this.server = server;
     }
 
+    public int getPort() {
+        if(this.door != null){
+            return this.door.getLocalPort();
+        }else{
+            return this.port;
+        }
+    }
+    
     public void setPort(int port) {
         this.port = port;
     }
@@ -60,7 +67,7 @@ public class SocketGatekeeper extends BaseWorker{
     public boolean doWork() {
         try{
             Socket s = this.door.accept();
-            String addr = "rmi://" + s.getInetAddress().getHostName() + ":" + this.port;
+            String addr = "rmi://" + s.getInetAddress().getHostName() + ":" + s.getPort();
             SocketManager.registerConnection(addr, s);
             SocketListener l = ListenerManager.getListener(addr);
             l.setProcessor(this.server.getProcessor());

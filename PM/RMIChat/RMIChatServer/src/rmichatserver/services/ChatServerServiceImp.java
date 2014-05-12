@@ -6,11 +6,7 @@
 
 package rmichatserver.services;
 
-import java.rmi.Naming;
-import java.rmi.RemoteException;
-import java.rmi.server.RemoteServer;
-import java.rmi.server.ServerNotActiveException;
-import java.rmi.server.UnicastRemoteObject;
+import david.ivan.rmi.exceptions.RemoteException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -21,36 +17,37 @@ import rmichatservices.ChatServerService;
  *
  * @author Ivan
  */
-public class ChatServerServiceImp extends UnicastRemoteObject implements ChatServerService{
+public class ChatServerServiceImp implements ChatServerService{
     
-    private final HashMap<String, String> clientNames;
-    private final HashMap<String, ChatClientService> callbacks;
+    private final HashMap<Integer, String> clientNames;
+    private final HashMap<Integer, ChatClientService> callbacks;
+    private int nextId = 1;
     
 
     public ChatServerServiceImp() throws RemoteException {
-        this.clientNames = new HashMap<String, String>();
-        this.callbacks = new HashMap<String, ChatClientService>();
+        this.clientNames = new HashMap<Integer, String>();
+        this.callbacks = new HashMap<Integer, ChatClientService>();
     }   
+
+    @Override
+    public int connectToServer(ChatClientService client, String username) throws RemoteException {
+        int id = this.nextId;
+        this.nextId++;
+        clientNames.put(id, username);
+        callbacks.put(id, client);
+        return id;
+    }
+    
+    
     
 
     @Override
-    public void connectToServer(ChatClientService client, String username) throws RemoteException {
-        try{
-            this.clientNames.put(RemoteServer.getClientHost(), username);
-            this.callbacks.put(RemoteServer.getClientHost(), client);
-        }catch(ServerNotActiveException e){
-            throw new RuntimeException("Internal call of service not supported");
-        }
-    }
-
-    @Override
-    public void sendMessage(String message) throws RemoteException {
-        Iterator<Map.Entry<String, ChatClientService>> i =  this.callbacks.entrySet().iterator();
+    public void sendMessage(int id, String message) throws RemoteException {
+        Iterator<Map.Entry<Integer, ChatClientService>> i =  this.callbacks.entrySet().iterator();
         while(i.hasNext()){
-            Map.Entry<String, ChatClientService> entry = i.next();
+            Map.Entry<Integer, ChatClientService> entry = i.next();
             entry.getValue().receiveMessage(this.clientNames.get(entry.getKey()), message);
-        }
-        
+        }   
         
     }
     
